@@ -1,0 +1,30 @@
+Flickr::API
+===========
+
+Simple interface to the Flickr API.
+
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  XML::Parser::Lite::Tree
+  LWP::UserAgent
+  Digest::MD5
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2004-2005 Cal Henderson <cal@iamcal.com>
+License: Perl Artistic License
+
