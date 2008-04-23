@@ -40,9 +40,21 @@ ok('f320caea573c1b74897a289f6919628c' eq $api->sign_args({'foo' => undef}));
 # check the auth url generator is working
 #
 
-my $uri = $api->request_auth_url('my_frob', 'r');
+my $uri = $api->request_auth_url('r', 'my_frob');
 
-ok($uri->query eq 'api_sig=3aa58af8dae8bbf2ac06237032d7de9c&perms=my_frob&frob=r&api_key=made_up_key');
+ok($uri->query eq 'api_sig=d749e3a7bd27da9c8af62a15f4c7b48f&perms=r&frob=my_frob&api_key=made_up_key');
 ok($uri->path eq '/services/auth');
 ok($uri->host eq 'flickr.com');
 ok($uri->scheme eq 'http');
+
+
+##################################################
+#
+# check we can't generate a url without a secret
+#
+
+$api = new Flickr::API({'key' => 'key'});
+$uri = $api->request_auth_url('r', 'frob');
+
+ok(!defined $uri);
+
