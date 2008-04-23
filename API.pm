@@ -7,7 +7,7 @@ use XML::Parser::Lite::Tree;
 use Flickr::API::Request;
 use Flickr::API::Response;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
 	my $class = shift;
@@ -121,8 +121,10 @@ Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 =head1 SEE ALSO
 
-L<Flickr::API::Request>
-L<Flickr::API::Response>
-L<XML::Parser::Lite>
+L<Flickr::API::Request>,
+L<Flickr::API::Response>,
+L<XML::Parser::Lite>,
+L<http://www.flickr.com/>,
+L<http://www.flickr.com/services/api/>
 
 =cut
