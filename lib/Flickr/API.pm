@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 sub new {
 	my $class = shift;
@@ -18,6 +18,12 @@ sub new {
 	my $self = new LWP::UserAgent;
 	$self->{api_key} = $options->{key};
 	$self->{api_secret} = $options->{secret};
+
+	eval {
+		require Compress::Zlib;
+
+		$self->default_header('Accept-Encoding' => 'gzip');
+	};
 
 	warn "You must pass an API key to the constructor" unless defined $self->{api_key};
 
@@ -96,7 +102,7 @@ sub execute_request {
 		return $response;
 	}
 
-	my $tree = XML::Parser::Lite::Tree::instance()->parse($response->{_content});
+	my $tree = XML::Parser::Lite::Tree::instance()->parse($response->decoded_content());
 
 	my $rsp_node = $self->_find_tag($tree->{children});
 
