@@ -3,13 +3,13 @@ package Flickr::API::Response;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
 	my $class = shift;
 	my $self = bless {}, $class;
 	my $options = shift;
-	$self->{raw} = '';
+	#$self->{raw} = '';
 	$self->{request} = $options->{request};
 	$self->{tree} = undef;
 	$self->{success} = 0;
@@ -71,7 +71,7 @@ Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 =head1 SEE ALSO
 
-L<Flickr::API>
+L<Flickr::API>,
 L<XML::Parser::Lite>
 
 =cut
