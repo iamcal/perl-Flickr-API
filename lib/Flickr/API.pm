@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub new {
 	my $class = shift;
@@ -18,6 +18,9 @@ sub new {
 	my $self = new LWP::UserAgent;
 	$self->{api_key} = $options->{key};
 	$self->{api_secret} = $options->{secret};
+
+	warn "You must pass an API key to the constructor" unless defined $self->{api_key};
+
 	bless $self, $class;
 	return $self;
 }
@@ -41,6 +44,8 @@ sub request_auth_url {
 	my $self  = shift;
 	my $perms = shift;
 	my $frob  = shift;
+
+	return undef unless defined $self->{api_secret} && length $self->{api_secret};
 
 	my %args = (
 		'api_key' => $self->{api_key},
@@ -73,11 +78,14 @@ sub execute_request {
 
 	$request->{api_args}->{method}  = $request->{api_method};
 	$request->{api_args}->{api_key} = $self->{api_key};
-	$request->{api_args}->{api_sig} = $self->sign_args($request->{api_args});
+
+	if (defined($self->{api_secret}) && length($self->{api_secret})){
+
+		$request->{api_args}->{api_sig} = $self->sign_args($request->{api_args});
+	}
 
 	$request->encode_args();
 
-	#print $request->as_string();
 
 	my $response = $self->request($request);
 	bless $response, 'Flickr::API::Response';
@@ -175,7 +183,8 @@ Constructs a C<Flickr::API::Request> object and executes it, returning a C<Flick
 
 =item C<execute_request($request)>
 
-Executes a C<Flickr::API::Request> object, returning a C<Flickr::API::Response> object.
+Executes a C<Flickr::API::Request> object, returning a C<Flickr::API::Response> object. Calls are signed
+if a secret was specified when creating the C<Flickr::API> object.
 
 =item C<request_auth_url($perms,$frob)>
 
@@ -183,6 +192,8 @@ Returns a C<URI> object representing the URL that an application must redirect a
 an authentication token.
 
 For web-based applications I<$frob> is an optional parameter.
+
+Returns undef if a secret was not specified when creating the C<Flickr::API> object.
 
 
 =back
