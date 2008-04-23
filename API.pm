@@ -7,13 +7,16 @@ use XML::Parser::Lite::Tree;
 use Flickr::API::Request;
 use Flickr::API::Response;
 
-our $VERSION = '0.02';
+our @ISA = qw(LWP::UserAgent);
+
+our $VERSION = '0.03';
 
 sub new {
 	my $class = shift;
-	my $self = bless {}, $class;
 	my $options = shift;
-	$self->{key} = $options->{key};
+	my $self = new LWP::UserAgent;
+	$self->{api_key} = $options->{key};
+	bless $self, $class;
 	return $self;
 }
 
@@ -28,20 +31,20 @@ sub execute_method {
 sub execute_request {
 	my ($self, $request) = @_;
 
-	my $response = new Flickr::API::Response({'request' => $request});
+	$request->{api_args}->{method} = $request->{api_method};
+	$request->{api_args}->{api_key} = $self->{api_key};
+	$request->encode_args();
 
-	$request->{args}->{method} = $request->{method};
-	$request->{args}->{api_key} = $self->{key};
+	my $response = $self->request($request);
+	bless $response, 'Flickr::API::Response';
+	$response->init_flickr();
 
-	my $ua = LWP::UserAgent->new;
-	my $ua_resp = $ua->post('http://www.flickr.com/services/rest/', $request->{args});
-
-	if ($ua_resp->{_rc} != 200){
-		$response->set_fail(0, "API returned a non-200 status code ($ua_resp->{_rc})");
+	if ($response->{_rc} != 200){
+		$response->set_fail(0, "API returned a non-200 status code ($response->{_rc})");
 		return $response;
 	}
 
-	my $tree = XML::Parser::Lite::Tree::instance()->parse($ua_resp->{_content});
+	my $tree = XML::Parser::Lite::Tree::instance()->parse($response->{_content});
 
 	my $rsp_node = $self->_find_tag($tree->{children});
 
@@ -90,15 +93,32 @@ Flickr::API - Perl interface to the Flickr API
 
   my $api = new Flickr::API({'key' => 'your_api_key'});
 
-  my $rsp = $api->execute_method('flickr.test.echo', {
+  my $response = $api->execute_method('flickr.test.echo', {
 		'foo' => 'bar',
 		'baz' => 'quux',
 	});
+
+or
+
+  use Flickr::API;
+  use Flickr::API::Request;
+
+  my $api = new Flickr::API({'key' => 'your_api_key'});
+
+  my $request = new Flickr::API::Request({
+		'method' => 'flickr.test.echo',
+		'args' => {},
+	});
+
+  my $response = $api->execute_request($request);
+  
 
 =head1 DESCRIPTION
 
 A simple interface for using the Flickr API.
 
+C<Flickr::API> is a subclass of L<LWP::UserAgent>, so all of the various
+proxy, request limits, caching, etc are available.
 
 =head2 METHODS
 

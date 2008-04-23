@@ -2,16 +2,38 @@ package Flickr::API::Request;
 
 use strict;
 use warnings;
+use HTTP::Request;
+use URI;
 
-our $VERSION = '0.01';
+our @ISA = qw(HTTP::Request);
+our $VERSION = '0.02';
 
 sub new {
 	my $class = shift;
-	my $self = bless {}, $class;
+	my $self = new HTTP::Request;
 	my $options = shift;
-	$self->{method} = $options->{method};
-	$self->{args} = $options->{args};
+	$self->{api_method} = $options->{method};
+	$self->{api_args} = $options->{args};
+	bless $self, $class;
+
+	$self->method('POST');
+        $self->uri('http://www.flickr.com/services/rest/');
+
 	return $self;
+}
+
+sub encode_args {
+	my ($self) = @_;
+
+	my $url = URI->new('http:');
+	$url->query_form(%{$self->{api_args}});
+	my $content = $url->query;
+
+	$self->header('Content-Type' => 'application/x-www-form-urlencoded');
+	if (defined($content)) {
+		$self->header('Content-Length' => length($content));
+		$self->content($content);
+	}
 }
 
 1;
@@ -27,17 +49,24 @@ Flickr::API::Request - A request to the Flickr API
   use Flickr::API;
   use Flickr::API::Request;
 
+  my $api = new Flickr::API({'key' => 'your_api_key'});
+
   my $request = new Flickr::API::Request({
   	'method' => $method,
-  	'args' => \%args,
+  	'args' => {},
   }); 
 
-  $api->execute_request($request);
+  my $response = $api->execute_request($request);
 
 
 =head1 DESCRIPTION
 
 This object encapsulates a request to the Flickr API.
+
+C<Flickr::API::Request> is a subclass of C<HTTP::Request>, so you can access
+any of the request parameters and tweak them yourself. The content, content-type
+header and content-length header are all built from the 'args' list by the
+C<Flickr::API::execute_request()> method.
 
 
 =head1 AUTHOR
