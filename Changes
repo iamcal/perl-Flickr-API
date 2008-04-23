@@ -1,6 +1,0 @@
-Revision history for Perl extension Flickr::API.
-
-0.01  Thu Aug 19 19:21:00 2004
-	- original version; created by h2xs 1.21 with options
-		-AXc -n Flickr::API
-
