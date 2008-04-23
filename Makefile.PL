@@ -7,7 +7,7 @@ WriteMakefile(
 		'LWP::UserAgent' => 0,
 		'HTTP::Request' => 0,
 		'HTTP::Response' => 0,
-		'URI' => 0,
+		'URI' => 1.18,
 		'XML::Parser::Lite::Tree' => 0.03,
 		'Digest::MD5' => 0,
 	},
