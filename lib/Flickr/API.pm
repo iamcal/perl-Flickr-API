@@ -133,7 +133,7 @@ sub execute_request {
 sub _find_tag {
 	my ($self, $children) = @_;
 	for my $child(@{$children}){
-		return $child if $child->{type} eq 'tag';
+		return $child if $child->{type} eq 'element';
 	}
 	return {};
 }
