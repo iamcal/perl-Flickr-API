@@ -70,8 +70,8 @@ foreach my $item (keys %got) {
 	is($expect{$item}, $got{$item}, "Checking that the $item item in the query matches in reverse");
 }
 
-ok($uri->path eq '/services/auth', "Checking correct return path");
-ok($uri->host eq 'flickr.com', "Checking return domain");
+ok($uri->path eq '/services/auth/', "Checking correct return path");
+ok($uri->host eq 'www.flickr.com', "Checking return domain");
 ok($uri->scheme eq 'http', "Checking return protocol");
 
 

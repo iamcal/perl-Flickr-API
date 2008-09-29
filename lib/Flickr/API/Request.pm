@@ -6,18 +6,20 @@ use HTTP::Request;
 use URI;
 
 our @ISA = qw(HTTP::Request);
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
 	my $class = shift;
-	my $self = new HTTP::Request;
 	my $options = shift;
-	$self->{api_method} = $options->{method};
-	$self->{api_args} = $options->{args};
+	my $self = new HTTP::Request;
+	$self->{api_method}	= $options->{method};
+	$self->{api_args}	= $options->{args};
+	$self->{rest_uri}	= $options->{rest_uri} || 'http://www.flickr.com/services/rest/';
+
 	bless $self, $class;
 
 	$self->method('POST');
-        $self->uri('http://www.flickr.com/services/rest/');
+        $self->uri($self->{rest_uri});
 
 	return $self;
 }
