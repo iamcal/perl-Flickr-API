@@ -16,8 +16,10 @@ sub new {
 	my $class = shift;
 	my $options = shift;
 	my $self = new LWP::UserAgent;
-	$self->{api_key} = $options->{key};
-	$self->{api_secret} = $options->{secret};
+	$self->{api_key}	= $options->{key};
+	$self->{api_secret}	= $options->{secret};
+	$self->{rest_uri}	= $options->{rest_uri} || 'http://www.flickr.com/services/rest/';
+	$self->{auth_uri}	= $options->{auth_uri} || 'http://www.flickr.com/services/auth/';
 
 	eval {
 		require Compress::Zlib;
@@ -65,7 +67,7 @@ sub request_auth_url {
 	my $sig = $self->sign_args(\%args);
 	$args{api_sig} = $sig;
 
-	my $uri = URI->new('http://flickr.com/services/auth');
+	my $uri = URI->new($self->{auth_uri});
 	$uri->query_form(%args);
 
 	return $uri;
@@ -74,7 +76,7 @@ sub request_auth_url {
 sub execute_method {
 	my ($self, $method, $args) = @_;
 
-	my $request = new Flickr::API::Request({'method' => $method, 'args' => $args});
+	my $request = new Flickr::API::Request({'method' => $method, 'args' => $args, rest_uri => $self->{rest_uri}});
 
 	$self->execute_request($request);
 }
