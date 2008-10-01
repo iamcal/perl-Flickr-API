@@ -21,10 +21,12 @@ my $rsp = $api->execute_method('fake.method', {});
 # check we get the 'method not found' error
 #
 
-# this error code will change in future!
-is($rsp->{error_code}, 112, 'checking the error code for "method not found"');
-
-#print "code was $rsp->{error_code}, msg was $rsp->{error_message}\n";
+if ($rsp->{_rc} eq '200'){
+	# this error code may change in future!
+	is($rsp->{error_code}, 112, 'checking the error code for "method not found"');
+}else{
+	is(1, 1, "skipping error code check, since we couldn't reach the API");
+}
 
 
 ##################################################
@@ -33,7 +35,12 @@ is($rsp->{error_code}, 112, 'checking the error code for "method not found"');
 #
 
 $rsp = $api->execute_method('flickr.test.echo', {format => 'fake'});
-is($rsp->{error_code}, 111, 'checking the error code for "format not found"');
+
+if ($rsp->{_rc} eq '200'){
+	is($rsp->{error_code}, 111, 'checking the error code for "format not found"');
+}else{
+	is(1, 1, "skipping error code check, since we couldn't reach the API");
+}
 
 
 ##################################################
