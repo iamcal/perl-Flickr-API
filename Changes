@@ -7,3 +7,7 @@ Changes to Flickr::API
 1.01, 2008-09-30
  * incorrectly numbered the previous release. gah
  * updated tests to work when the flickr api isn't hit-able
+
+1.02, 2009-07-31
+ * license update for fedora
+
