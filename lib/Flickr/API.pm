@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 sub new {
 	my $class = shift;
