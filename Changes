@@ -11,3 +11,6 @@ Changes to Flickr::API
 1.02, 2009-07-31
  * license update for fedora
 
+1.03, 2009-08-23
+ * fix for perl5.6 - when HTTP::Message->decoded_content() comes back empty,
+   use content() instead.
