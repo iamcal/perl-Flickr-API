@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 sub new {
 	my $class = shift;
@@ -104,7 +104,10 @@ sub execute_request {
 		return $response;
 	}
 
-	my $tree = XML::Parser::Lite::Tree::instance()->parse($response->decoded_content());
+	my $content = $response->decoded_content();
+	$content = $response->content() unless defined $content;
+
+	my $tree = XML::Parser::Lite::Tree::instance()->parse($content);
 
 	my $rsp_node = $self->_find_tag($tree->{children});
 
