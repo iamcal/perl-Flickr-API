@@ -14,3 +14,7 @@ Changes to Flickr::API
 1.03, 2009-08-23
  * fix for perl5.6 - when HTTP::Message->decoded_content() comes back empty,
    use content() instead.
+
+1.04, 2009-08-25
+ * re-fix for perl5.6 - just require a newer version of HTTP::Message which supports
+   mime-decoding instead.
