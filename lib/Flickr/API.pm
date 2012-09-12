@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 sub new {
 	my $class = shift;
@@ -18,8 +18,8 @@ sub new {
 	my $self = new LWP::UserAgent;
 	$self->{api_key}	= $options->{key};
 	$self->{api_secret}	= $options->{secret};
-	$self->{rest_uri}	= $options->{rest_uri} || 'http://www.flickr.com/services/rest/';
-	$self->{auth_uri}	= $options->{auth_uri} || 'http://www.flickr.com/services/auth/';
+	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
+	$self->{auth_uri}	= $options->{auth_uri} || 'http://api.flickr.com/services/auth/';
 
 	eval {
 		require Compress::Zlib;
@@ -212,7 +212,7 @@ Returns undef if a secret was not specified when creating the C<Flickr::API> obj
 
 =head1 AUTHOR
 
-Copyright (C) 2004-2005, Cal Henderson, E<lt>cal@iamcal.comE<gt>
+Copyright (C) 2004-2012, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 Auth API patches provided by Aaron Straup Cope
 
@@ -224,5 +224,6 @@ L<Flickr::API::Response>,
 L<XML::Parser::Lite>,
 L<http://www.flickr.com/>,
 L<http://www.flickr.com/services/api/>
+L<https://github.com/iamcal/perl-Flickr-API>
 
 =cut
