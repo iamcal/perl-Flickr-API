@@ -10,7 +10,7 @@ use Digest::MD5 qw(md5_hex);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 sub new {
 	my $class = shift;
@@ -212,7 +212,7 @@ Returns undef if a secret was not specified when creating the C<Flickr::API> obj
 
 =head1 AUTHOR
 
-Copyright (C) 2004-2005, Cal Henderson, E<lt>cal@iamcal.comE<gt>
+Copyright (C) 2004-2012, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 Auth API patches provided by Aaron Straup Cope
 
