@@ -18,3 +18,6 @@ Changes to Flickr::API
 1.04, 2009-08-25
  * re-fix for perl5.6 - just require a newer version of HTTP::Message which supports
    mime-decoding instead.
+
+1.05, 2012-09-12
+ * Updated Flickr API urls from http://www.flickr.com/services/ to http://api.flickr.com/services/.

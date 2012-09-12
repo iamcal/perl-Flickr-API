@@ -78,7 +78,7 @@ foreach my $item (keys %got) {
 }
 
 ok($uri->path eq '/services/auth/', "Checking correct return path");
-ok($uri->host eq 'www.flickr.com', "Checking return domain");
+ok($uri->host eq 'api.flickr.com', "Checking return domain");
 ok($uri->scheme eq 'http', "Checking return protocol");
 
 
