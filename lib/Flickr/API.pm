@@ -224,5 +224,6 @@ L<Flickr::API::Response>,
 L<XML::Parser::Lite>,
 L<http://www.flickr.com/>,
 L<http://www.flickr.com/services/api/>
+L<https://github.com/iamcal/perl-Flickr-API>
 
 =cut
