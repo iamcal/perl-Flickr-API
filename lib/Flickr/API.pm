@@ -7,15 +7,29 @@ use XML::Parser::Lite::Tree;
 use Flickr::API::Request;
 use Flickr::API::Response;
 use Digest::MD5 qw(md5_hex);
+use Scalar::Util qw(blessed);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 sub new {
 	my $class = shift;
 	my $options = shift;
-	my $self = new LWP::UserAgent;
+
+	my $self;
+	if ($options->{lwpobj}){
+		my $lwpobj = $options->{lwpobj};
+		if (defined($lwpobj)){
+			my $lwpobjtype = Scalar::Util::blessed($lwpobj);
+			if (defined($lwpobjtype)){
+				$self = $lwpobj;
+				@ISA = ($lwpobjtype);
+			}
+		}
+	}
+	$self = new LWP::UserAgent unless $self;
+
 	$self->{api_key}	= $options->{key};
 	$self->{api_secret}	= $options->{secret};
 	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
@@ -184,9 +198,34 @@ A simple interface for using the Flickr API.
 C<Flickr::API> is a subclass of L<LWP::UserAgent>, so all of the various
 proxy, request limits, caching, etc are available.
 
-=head2 METHODS
+=head1 METHODS
 
-=over 4
+=over
+
+=item C<new({ opt =E<gt> 'value', ... })>
+
+Returns as new C<Flickr::API> object. The options are as follows:
+
+=over
+
+=item C<key> (required)
+
+Your API key
+
+=item C<secret>
+
+Your API key's secret
+
+=item C<rest_uri> & C<auth_uri>
+
+Override the URIs used for contacting the API.
+
+=item C<lwpobj>
+
+Base the C<Flickr::API> on this object, instead of creating a new instance of C<LWP::UserAgent>.
+This is useful for using the features of e.g. C<LWP::UserAgent::Cached>.
+
+=back
 
 =item C<execute_method($method, $args)>
 
@@ -206,15 +245,15 @@ For web-based applications I<$frob> is an optional parameter.
 
 Returns undef if a secret was not specified when creating the C<Flickr::API> object.
 
-
 =back
-
 
 =head1 AUTHOR
 
-Copyright (C) 2004-2012, Cal Henderson, E<lt>cal@iamcal.comE<gt>
+Copyright (C) 2004-2013, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 Auth API patches provided by Aaron Straup Cope
+
+Subclassing patch from AHP
 
 
 =head1 SEE ALSO

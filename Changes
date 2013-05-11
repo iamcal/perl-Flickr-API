@@ -21,3 +21,6 @@ Changes to Flickr::API
 
 1.05, 2012-09-12
  * Updated Flickr API urls from http://www.flickr.com/services/ to http://api.flickr.com/services/.
+
+1.06, 2013-05-11
+ * Added `lwpobj` argument, to allow using subclasses of LWP::UserAgent
