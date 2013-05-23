@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use HTTP::Request;
 use URI;
+use Encode qw(encode_utf8);
 
 our @ISA = qw(HTTP::Request);
 our $VERSION = '0.03';
@@ -15,6 +16,7 @@ sub new {
 	$self->{api_method}	= $options->{method};
 	$self->{api_args}	= $options->{args};
 	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
+	$self->{unicode}	= $options->{unicode} || 0;
 
 	bless $self, $class;
 
@@ -28,7 +30,14 @@ sub encode_args {
 	my ($self) = @_;
 
 	my $url = URI->new('http:');
+
+	if ($self->{unicode}){
+		for my $k(keys %{$self->{api_args}}){
+			$self->{api_args}->{$k} = encode_utf8($self->{api_args}->{$k});
+		}
+	}
 	$url->query_form(%{$self->{api_args}});
+
 	my $content = $url->query;
 
 	$self->header('Content-Type' => 'application/x-www-form-urlencoded');

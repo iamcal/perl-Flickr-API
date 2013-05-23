@@ -1,5 +1,5 @@
 use Test::More;
-BEGIN { plan tests => 17 };
+BEGIN { plan tests => 19 };
 
 BEGIN { use_ok( 'Flickr::API' ); }
 
@@ -51,6 +51,11 @@ if ($rsp->{_rc} eq '200'){
 ok('466cd24ced0b23df66809a4d2dad75f8' eq $api->sign_args({'foo' => 'bar'}), "Signing test 1");
 ok('f320caea573c1b74897a289f6919628c' eq $api->sign_args({'foo' => undef}), "Signing test 2");
 
+$api->{unicode} = 0;
+is('b8bac3b2a4f919d04821e43adf59288c', $api->sign_args({'foo' => "\xE5\x8C\x95\xE4\xB8\x83"}), "Signing test 3 (unicode=0)");
+
+$api->{unicode} = 1;
+is('b8bac3b2a4f919d04821e43adf59288c', $api->sign_args({'foo' => "\x{5315}\x{4e03}"}), "Signing test 4 (unicode=1)");
 
 ##################################################
 #

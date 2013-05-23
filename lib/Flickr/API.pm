@@ -8,10 +8,11 @@ use Flickr::API::Request;
 use Flickr::API::Response;
 use Digest::MD5 qw(md5_hex);
 use Scalar::Util qw(blessed);
+use Encode qw(encode_utf8);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.06';
+our $VERSION = '1.07';
 
 sub new {
 	my $class = shift;
@@ -34,6 +35,7 @@ sub new {
 	$self->{api_secret}	= $options->{secret};
 	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
 	$self->{auth_uri}	= $options->{auth_uri} || 'http://api.flickr.com/services/auth/';
+	$self->{unicode}	= $options->{unicode} || 0;
 
 	eval {
 		require Compress::Zlib;
@@ -59,6 +61,7 @@ sub sign_args {
 		$sig .= $key . $value;
 	}
 
+	return md5_hex(encode_utf8($sig)) if $self->{unicode};
 	return md5_hex($sig);
 }
 
@@ -90,7 +93,12 @@ sub request_auth_url {
 sub execute_method {
 	my ($self, $method, $args) = @_;
 
-	my $request = new Flickr::API::Request({'method' => $method, 'args' => $args, rest_uri => $self->{rest_uri}});
+	my $request = new Flickr::API::Request({
+		'method'	=> $method,
+		'args'		=> $args,
+		'rest_uri'	=> $self->{rest_uri},
+		'unicode'	=> $self->{unicode},
+	});
 
 	$self->execute_request($request);
 }
@@ -168,8 +176,11 @@ Flickr::API - Perl interface to the Flickr API
 
   use Flickr::API;
 
-  my $api = new Flickr::API({'key'    => 'your_api_key',
-                             'secret' => 'your_app_secret'});
+  my $api = new Flickr::API({
+		'key'    => 'your_api_key',
+		'secret' => 'your_app_secret',
+		'unicode'=> 0,
+	});
 
   my $response = $api->execute_method('flickr.test.echo', {
 		'foo' => 'bar',
@@ -224,6 +235,11 @@ Override the URIs used for contacting the API.
 
 Base the C<Flickr::API> on this object, instead of creating a new instance of C<LWP::UserAgent>.
 This is useful for using the features of e.g. C<LWP::UserAgent::Cached>.
+
+=item C<unicode>
+
+This flag controls whether Flicrk::API expects you to pass UTF-8 bytes (unicode=0, the default) or
+actual unicode strings (unicode=1) in the request.
 
 =back
 
