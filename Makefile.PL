@@ -3,6 +3,12 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'Flickr::API',
     'VERSION_FROM'	=> 'lib/Flickr/API.pm',
+    'LICENSE'           => 'perl',
+    'META_MERGE'        => {
+        resources => {
+            repository  =>  'https://github.com/iamcal/perl-Flickr-API',
+        },
+    },
     'PREREQ_PM'		=> {
 		'LWP::UserAgent' => 0,
 		'HTTP::Request' => 0,
