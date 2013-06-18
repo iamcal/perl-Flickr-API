@@ -176,7 +176,7 @@ Flickr::API - Perl interface to the Flickr API
 
   use Flickr::API;
 
-  my $api = new Flickr::API({
+  my $api = Flickr::API->new({
 		'key'    => 'your_api_key',
 		'secret' => 'your_app_secret',
 		'unicode'=> 0,
@@ -192,9 +192,9 @@ or
   use Flickr::API;
   use Flickr::API::Request;
 
-  my $api = new Flickr::API({'key' => 'your_api_key'});
+  my $api = Flickr::API->new({'key' => 'your_api_key'});
 
-  my $request = new Flickr::API::Request({
+  my $request = Flickr::API::Request->new({
 		'method' => 'flickr.test.echo',
 		'args' => {},
 	});
@@ -215,7 +215,7 @@ proxy, request limits, caching, etc are available.
 
 =item C<new({ opt =E<gt> 'value', ... })>
 
-Returns as new C<Flickr::API> object. The options are as follows:
+Returns as new L<Flickr::API> object. The options are as follows:
 
 =over
 
@@ -233,8 +233,8 @@ Override the URIs used for contacting the API.
 
 =item C<lwpobj>
 
-Base the C<Flickr::API> on this object, instead of creating a new instance of C<LWP::UserAgent>.
-This is useful for using the features of e.g. C<LWP::UserAgent::Cached>.
+Base the C<Flickr::API> on this object, instead of creating a new instance of L<LWP::UserAgent>.
+This is useful for using the features of e.g. L<LWP::UserAgent::Cached>.
 
 =item C<unicode>
 
@@ -245,16 +245,16 @@ actual unicode strings (unicode=1) in the request.
 
 =item C<execute_method($method, $args)>
 
-Constructs a C<Flickr::API::Request> object and executes it, returning a C<Flickr::API::Response> object.
+Constructs a L<Flickr::API::Request> object and executes it, returning a L<Flickr::API::Response> object.
 
 =item C<execute_request($request)>
 
-Executes a C<Flickr::API::Request> object, returning a C<Flickr::API::Response> object. Calls are signed
-if a secret was specified when creating the C<Flickr::API> object.
+Executes a L<Flickr::API::Request> object, returning a L<Flickr::API::Response> object. Calls are signed
+if a secret was specified when creating the L<Flickr::API> object.
 
 =item C<request_auth_url($perms,$frob)>
 
-Returns a C<URI> object representing the URL that an application must redirect a user to for approving
+Returns a L<URI> object representing the URL that an application must redirect a user to for approving
 an authentication token.
 
 For web-based applications I<$frob> is an optional parameter.

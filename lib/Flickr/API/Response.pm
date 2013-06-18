@@ -50,7 +50,7 @@ Flickr::API::Response - A response from the flickr API.
   use Flickr::API;
   use Flickr::API::Response;
 
-  my $api = new Flickr::API({'key' => 'your_api_key'});
+  my $api = Flickr::API->new({'key' => 'your_api_key'});
 
   my $response = $api->execute_method('flickr.test.echo', {
                 'foo' => 'bar',
@@ -62,7 +62,7 @@ Flickr::API::Response - A response from the flickr API.
 =head1 DESCRIPTION
 
 This object encapsulates a response from the Flickr API. It's
-a subclass of C<HTTP::Response> with the following additional
+a subclass of L<HTTP::Response> with the following additional
 keys:
 
   {
@@ -73,13 +73,13 @@ keys:
   }
 
 The C<_request> key contains the request object that this response
-was generated from. This request will be a C<Flickr::API::Request>
-object, which is a subclass of C<HTTP:Request>.
+was generated from. This request will be a L<Flickr::API::Request>
+object, which is a subclass of L<HTTP:Request>.
 
 The C<sucess> key contains 1 or 0, indicating
 whether the request suceeded. If it failed, C<error_code> and
 C<error_message> explain what went wrong. If it suceeded, C<tree>
-contains an C<XML::Parser::Lite::Tree> object of the response XML.
+contains an L<XML::Parser::Lite::Tree> object of the response XML.
 
 
 =head1 AUTHOR

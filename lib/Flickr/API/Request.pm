@@ -60,9 +60,9 @@ Flickr::API::Request - A request to the Flickr API
   use Flickr::API;
   use Flickr::API::Request;
 
-  my $api = new Flickr::API({'key' => 'your_api_key'});
+  my $api = Flickr::API->new({'key' => 'your_api_key'});
 
-  my $request = new Flickr::API::Request({
+  my $request = Flickr::API::Request->new({
   	'method' => $method,
   	'args' => {},
   }); 
@@ -74,7 +74,7 @@ Flickr::API::Request - A request to the Flickr API
 
 This object encapsulates a request to the Flickr API.
 
-C<Flickr::API::Request> is a subclass of C<HTTP::Request>, so you can access
+C<Flickr::API::Request> is a subclass of L<HTTP::Request>, so you can access
 any of the request parameters and tweak them yourself. The content, content-type
 header and content-length header are all built from the 'args' list by the
 C<Flickr::API::execute_request()> method.
