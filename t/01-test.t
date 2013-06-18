@@ -1,7 +1,9 @@
-use Test::More;
-BEGIN { plan tests => 19 };
+use strict;
+use warnings;
 
-BEGIN { use_ok( 'Flickr::API' ); }
+use Test::More tests => 20;
+
+use Flickr::API;
 
 
 ##################################################
@@ -9,11 +11,13 @@ BEGIN { use_ok( 'Flickr::API' ); }
 # create an api object
 #
 
-my $api = new Flickr::API({
+my $api = Flickr::API->new({
 		'key' => 'made_up_key',
 		'secret' => 'my_secret',
 	});
+isa_ok $api, 'Flickr::API';
 my $rsp = $api->execute_method('fake.method', {});
+isa_ok $rsp, 'Flickr::API::Response';
 
 
 ##################################################
@@ -21,11 +25,11 @@ my $rsp = $api->execute_method('fake.method', {});
 # check we get the 'method not found' error
 #
 
-if ($rsp->{_rc} eq '200'){
+SKIP: {
+	skip "skipping error code check, since we couldn't reach the API", 1
+		if $rsp->{_rc} ne '200';
 	# this error code may change in future!
 	is($rsp->{error_code}, 112, 'checking the error code for "method not found"');
-}else{
-	is(1, 1, "skipping error code check, since we couldn't reach the API");
 }
 
 
@@ -36,10 +40,10 @@ if ($rsp->{_rc} eq '200'){
 
 $rsp = $api->execute_method('flickr.test.echo', {format => 'fake'});
 
-if ($rsp->{_rc} eq '200'){
+SKIP: {
+	skip "skipping error code check, since we couldn't reach the API", 1
+		if $rsp->{_rc} ne '200';
 	is($rsp->{error_code}, 111, 'checking the error code for "format not found"');
-}else{
-	is(1, 1, "skipping error code check, since we couldn't reach the API");
 }
 
 
@@ -48,8 +52,8 @@ if ($rsp->{_rc} eq '200'){
 # check the signing works properly
 #
 
-ok('466cd24ced0b23df66809a4d2dad75f8' eq $api->sign_args({'foo' => 'bar'}), "Signing test 1");
-ok('f320caea573c1b74897a289f6919628c' eq $api->sign_args({'foo' => undef}), "Signing test 2");
+is($api->sign_args({'foo' => 'bar'}), '466cd24ced0b23df66809a4d2dad75f8', "Signing test 1");
+is($api->sign_args({'foo' => undef}), 'f320caea573c1b74897a289f6919628c', "Signing test 2");
 
 $api->{unicode} = 0;
 is('b8bac3b2a4f919d04821e43adf59288c', $api->sign_args({'foo' => "\xE5\x8C\x95\xE4\xB8\x83"}), "Signing test 3 (unicode=0)");
