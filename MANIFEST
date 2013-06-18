@@ -4,5 +4,5 @@ lib/Flickr/API/Response.pm
 Makefile.PL
 MANIFEST
 README
-test.pl
+t/01-test.t
 Changes
