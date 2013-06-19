@@ -12,7 +12,7 @@ use Encode qw(encode_utf8);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.07';
+our $VERSION = '1.08';
 
 sub new {
 	my $class = shift;

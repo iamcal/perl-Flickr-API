@@ -27,3 +27,6 @@ Changes to Flickr::API
 
 1.07, 2013-05-23
  * Added flag to enable handling of native Unicode strings
+
+1.08, 2013-06-19
+ * Various cleanup from Gabor Szabo
