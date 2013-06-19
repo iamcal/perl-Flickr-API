@@ -12,7 +12,7 @@ our $VERSION = '0.03';
 sub new {
 	my $class = shift;
 	my $options = shift;
-	my $self = new HTTP::Request;
+	my $self = HTTP::Request->new;
 	$self->{api_method}	= $options->{method};
 	$self->{api_args}	= $options->{args};
 	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';

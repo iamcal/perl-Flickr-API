@@ -10,7 +10,7 @@ our $VERSION = '0.02';
 
 sub new {
 	my $class = shift;
-	my $self = new HTTP::Response;
+	my $self = HTTP::Response->new;
 	my $options = shift;
 	bless $self, $class;
 	return $self;
