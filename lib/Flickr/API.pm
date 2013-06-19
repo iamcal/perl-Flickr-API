@@ -29,7 +29,7 @@ sub new {
 			}
 		}
 	}
-	$self = new LWP::UserAgent unless $self;
+	$self = LWP::UserAgent->new unless $self;
 
 	$self->{api_key}	= $options->{key};
 	$self->{api_secret}	= $options->{secret};
@@ -93,7 +93,7 @@ sub request_auth_url {
 sub execute_method {
 	my ($self, $method, $args) = @_;
 
-	my $request = new Flickr::API::Request({
+	my $request = Flickr::API::Request->new({
 		'method'	=> $method,
 		'args'		=> $args,
 		'rest_uri'	=> $self->{rest_uri},
