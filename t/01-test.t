@@ -83,7 +83,7 @@ foreach my $item (keys %got) {
 
 is($uri->path, '/services/auth/', "Checking correct return path");
 is($uri->host, 'api.flickr.com', "Checking return domain");
-is($uri->scheme, 'http', "Checking return protocol");
+is($uri->scheme, 'https', "Checking return protocol");
 
 
 ##################################################
