@@ -15,7 +15,7 @@ sub new {
 	my $self = HTTP::Request->new;
 	$self->{api_method}	= $options->{method};
 	$self->{api_args}	= $options->{args};
-	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
+	$self->{rest_uri}	= $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
 	$self->{unicode}	= $options->{unicode} || 0;
 
 	bless $self, $class;
@@ -29,7 +29,7 @@ sub new {
 sub encode_args {
 	my ($self) = @_;
 
-	my $url = URI->new('http:');
+	my $url = URI->new('https:');
 
 	if ($self->{unicode}){
 		for my $k(keys %{$self->{api_args}}){
