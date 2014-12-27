@@ -77,8 +77,8 @@ was generated from. This request will be a L<Flickr::API::Request>
 object, which is a subclass of L<HTTP:Request>.
 
 The C<sucess> key contains 1 or 0, indicating
-whether the request suceeded. If it failed, C<error_code> and
-C<error_message> explain what went wrong. If it suceeded, C<tree>
+whether the request succeeded. If it failed, C<error_code> and
+C<error_message> explain what went wrong. If it succeeded, C<tree>
 contains an L<XML::Parser::Lite::Tree> object of the response XML.
 
 

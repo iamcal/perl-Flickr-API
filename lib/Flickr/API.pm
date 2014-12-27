@@ -12,7 +12,7 @@ use Encode qw(encode_utf8);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.08';
+our $VERSION = '1.10';
 
 sub new {
 	my $class = shift;
@@ -33,8 +33,8 @@ sub new {
 
 	$self->{api_key}	= $options->{key};
 	$self->{api_secret}	= $options->{secret};
-	$self->{rest_uri}	= $options->{rest_uri} || 'http://api.flickr.com/services/rest/';
-	$self->{auth_uri}	= $options->{auth_uri} || 'http://api.flickr.com/services/auth/';
+	$self->{rest_uri}	= $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
+	$self->{auth_uri}	= $options->{auth_uri} || 'https://api.flickr.com/services/auth/';
 	$self->{unicode}	= $options->{unicode} || 0;
 
 	eval {
