@@ -30,3 +30,8 @@ Changes to Flickr::API
 
 1.08, 2013-06-19
  * Various cleanup from Gabor Szabo
+
+1.11, 2014-12-27
+ * Added OAuth authentication to Flickr::API and Flickr::API::Request
+ * Added some examples
+

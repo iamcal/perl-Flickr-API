@@ -21,7 +21,7 @@ sub init_flickr {
 	$self->{tree} = undef;
 	$self->{success} = 0;
 	$self->{error_code} = 0;
-	$self->{error_message} = '';	
+	$self->{error_message} = '';
 }
 
 sub set_fail {
