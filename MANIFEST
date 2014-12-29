@@ -1,8 +1,12 @@
 lib/Flickr/API.pm
 lib/Flickr/API/Request.pm
 lib/Flickr/API/Response.pm
+examples/flickr_oauth_authentication.pl
+examples/flickr_method_test_echo.pl
+examples/flickr_method_test_login.pl
 Makefile.PL
 MANIFEST
 README
 t/01-test.t
 Changes
+META.yml                                 Module meta-data (added by MakeMaker)
