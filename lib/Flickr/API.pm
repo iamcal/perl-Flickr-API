@@ -271,6 +271,11 @@ Auth API patches provided by Aaron Straup Cope
 
 Subclassing patch from AHP
 
+=head1 LICENSE
+
+This program is released under the Artistic License 2.0 by The Perl Foundation.
+
+The full text of the license may be found at L<http://www.perlfoundation.org/artistic_license_2_0>
 
 =head1 SEE ALSO
 
