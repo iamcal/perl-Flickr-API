@@ -7,7 +7,6 @@ use XML::Parser::Lite::Tree;
 use Flickr::API::Request;
 use Flickr::API::Response;
 use Net::OAuth;
-use String::Random;
 use Digest::MD5 qw(md5_hex);
 use Scalar::Util qw(blessed);
 use Encode qw(encode_utf8);
@@ -400,8 +399,7 @@ sub _find_tag {
 
 sub _make_nonce {
 
-    my $nonce  = String::Random->new;
-    return $nonce->randpattern("cnCnCcnncnncccn");
+    return md5_hex(rand);
 
 }
 
