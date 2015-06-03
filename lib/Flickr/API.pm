@@ -11,6 +11,7 @@ use Digest::MD5 qw(md5_hex);
 use Scalar::Util qw(blessed);
 use Encode qw(encode_utf8);
 use Carp;
+use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
@@ -33,6 +34,9 @@ sub new {
 	}
 	$self = LWP::UserAgent->new unless $self;
 
+	#
+	# If the options have consumer_key, handle as oauth
+	#
 	if (defined($options->{consumer_key})) {
 
 		$self->{api_type} = 'oauth';
@@ -41,19 +45,25 @@ sub new {
 
 		if (defined($options->{consumer_secret})) {
 
+			#
+			# for the flickr api object
+			#
 			$self->{oauth_request}   = 'consumer';
 			$self->{consumer_key}    = $options->{consumer_key};
 			$self->{consumer_secret} = $options->{consumer_secret};
 			$self->{unicode}         = $options->{unicode}           || 0;
-
-			$self->{oauth}->{consumer_key}     = $options->{consumer_key};
-			$self->{oauth}->{consumer_secret}  = $options->{consumer_secret};
-			$self->{oauth}->{nonce}            = $options->{nonce}             || _make_nonce();
+			#
+			# for Net::OAuth Consumer Requests
+			#
 			$self->{oauth}->{request_method}   = $options->{request_method}    || 'GET';
+			$self->{oauth}->{request_url}      = $self->{rest_uri};
+			$self->{oauth}->{consumer_secret}  = $options->{consumer_secret};
+			$self->{oauth}->{consumer_key}     = $options->{consumer_key};
+			$self->{oauth}->{nonce}            = $options->{nonce}             || _make_nonce();
 			$self->{oauth}->{signature_method} = $options->{signature_method}  ||'HMAC-SHA1';
 			$self->{oauth}->{timestamp}        = $options->{timestamp}         || time;
-			$self->{oauth}->{request_url}      = $self->{rest_uri};
 			$self->{oauth}->{version}          = '1.0';
+			$self->{oauth}->{callback}         = $options->{callback};
 
 		}
 		else {
@@ -64,9 +74,28 @@ sub new {
 
 		if (defined($options->{token}) && defined($options->{token_secret})) {
 
-			$self->{oauth_request}         = 'protected resource';
-			$self->{oauth}->{token}        = $options->{token};
+			#
+			# If we have token/token secret then we are for protected resources
+			#
 			$self->{oauth}->{token_secret} = $options->{token_secret};
+			$self->{oauth}->{token}        = $options->{token};
+			$self->{oauth_request}         = 'protected resource';
+
+		}
+
+		#
+		# Preserve request and access tokens
+		#
+		if (defined($options->{request_token}) and
+			ref($options->{request_token}) eq 'Net::OAuth::V1_0A::RequestTokenResponse') {
+
+			$self->{oauth}->{request_token} = $options->{request_token};
+
+		}
+		if (defined($options->{access_token}) and
+			ref($options->{access_token}) eq 'Net::OAuth::AccessTokenResponse') {
+
+			$self->{oauth}->{access_token} = $options->{access_token};
 
 		}
 	}
@@ -125,7 +154,7 @@ sub request_auth_url {
 	if ($self->is_oauth) {
 
 		carp "request_auth_url called for an OAuth instantiated Flickr::API";
-		return;
+		return undef;
 
 	}
 
@@ -166,6 +195,21 @@ sub execute_method {
 		$oauth->{timestamp}               =  time;
 		$oauth->{signature_method}        =  $self->{oauth}->{signature_method};
 		$oauth->{version}                 =  $self->{oauth}->{version};
+
+		if (defined($args->{'token'}) or defined($args->{'token_secret'})) {
+
+			carp "\ntoken and token_secret must be specified in Flickr::API->new() and are being discarded\n";
+			undef $args->{'token'};
+			undef $args->{'token_secret'};
+		}
+
+		if (defined($args->{'consumer_key'}) or defined($args->{'consumer_secret'})) {
+
+			carp "\nconsumer_key and consumer_secret must be specified in Flickr::API->new() and are being discarded\n";
+			undef $args->{'consumer_key'};
+			undef $args->{'consumer_secret'};
+		}
+
 
 		$oauth->{extra_params} = $args;
 		$oauth->{extra_params}->{method}  =  $method;
@@ -259,21 +303,31 @@ sub execute_request {
 	return $response;
 }
 
+
 #
 # OAuth methods
 #
 
+#
+# Handle request token requests (process: REQUEST TOKEN, authorize, access token)
+#
 sub oauth_request_token {
 
 	my $self    = shift;
 	my $options = shift;
 	my %args    = %{$self->{oauth}};
 
-	unless ($self->is_oauth) { carp "oauth_request_token called for Non-OAuth FLickr::API object"; }
+	unless ($self->is_oauth) {
+		carp "\noauth_request_token called for Non-OAuth Flickr::API object\n";
+		return undef;
+	}
+	unless ($self->get_oauth_request_type() eq 'consumer') {
+		croak "\noauth_request_token called using protected resource Flickr::API object\n";
+	}
 
 	$self->{oauth_request} = 'Request Token';
 	$args{request_url}     = $options->{request_token_url} || 'https://api.flickr.com/services/oauth/request_token';
-	$args{callback}        = $options->{callback} || 'http:127.0.0.1';
+	$args{callback}        = $options->{callback} || 'https://127.0.0.1';
 
 	$Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
@@ -286,22 +340,32 @@ sub oauth_request_token {
 	my $content  = $response->decoded_content();
 	$content = $response->content() unless defined $content;
 
+	if ($content =~ m/^oauth_problem=(.+)$/) {
+
+		carp "\nRequest token not granted: '",$1,"'\n";
+		$self->{oauth}->{request_token} = $1;
+		return $1;
+	}
+
 	$self->{oauth}->{request_token} = Net::OAuth->response('request token')->from_post_body($content);
 	$self->{oauth}->{token}         = $self->{oauth}->{request_token}->token();
 	$self->{oauth}->{token_secret}  = $self->{oauth}->{request_token}->token_secret();
 	$self->{oauth}->{callback}      = $args{callback};
-
-	return;
-
+	return 'ok';
 }
 
+#
+# Participate in authorization (process: request token, AUTHORIZE, access token)
+#
 sub oauth_authorize_uri {
 
 	my $self    = shift;
 	my $options = shift;
 
-	unless ($self->is_oauth) { carp "oauth_authorize_uri called for Non-OAuth FLickr::API object"; }
-
+	unless ($self->is_oauth) {
+		carp "oauth_authorize_uri called for Non-OAuth Flickr::API object";
+		return undef;
+	}
 	my %args    = %{$self->{oauth}};
 
 	$self->{oauth_request} = 'User Authentication';
@@ -315,16 +379,22 @@ sub oauth_authorize_uri {
 
 }
 
+#
+# Handle access token requests (process: request token, authorize, ACCESS TOKEN)
+#
 sub oauth_access_token {
 
 	my $self    = shift;
 	my $options = shift;
 
-	unless ($self->is_oauth) { carp "oauth_access_token called for Non-OAuth FLickr::API object"; }
-
+	unless ($self->is_oauth) {
+		carp "oauth_access_token called for Non-OAuth Flickr::API object";
+		return undef;
+	}
 	if ($self->{oauth}->{token} ne $options->{token}) {
 
 		carp "Request token in API does not match token for access token request";
+		return undef;
 
 	}
 	$self->{oauth}->{verifier} = $options->{verifier};
@@ -344,36 +414,99 @@ sub oauth_access_token {
 	my $content  = $response->decoded_content();
 	$content = $response->content() unless defined $content;
 
+	if ($content =~ m/^oauth_problem=(.+)$/) {
+
+		carp "\nAccess token not granted: '",$1,"'\n";
+		$self->{oauth}->{access_token} = $1;
+		return $1;
+
+	}
+
 	$self->{oauth}->{access_token}  = Net::OAuth->response('access token')->from_post_body($content);
 	$self->{oauth}->{token}         = $self->{oauth}->{access_token}->token();
 	$self->{oauth}->{token_secret}  = $self->{oauth}->{access_token}->token_secret();
 
-	return;
+	delete $self->{oauth}->{request_token}; #No longer valid, anyway
+
+	return 'ok';
 
 }
 
+#
+# Utility method for returning a hash of
+#   specifed subset the oauth portion of the API object
+#     or
+#   or all of it
+#
 sub oauth_export_config {
-	my $self = shift;
-	my $type = shift;
+	my $self   = shift;
+	my $type   = shift;
+    my $params = shift;
 
-	unless ($self->is_oauth) { carp "oauth_export_config called for Non-OAuth FLickr::API object"; }
+	unless($params) { $params='do_it'; }
+
+	unless ($self->is_oauth) {
+		carp "\noauth_export_config called for Non-OAuth Flickr::API object\n";
+		return;
+	}
 
 	my %oauth;
 
-    if ($self->is_oauth && defined($type)) {
-		%oauth = map { ($_) => undef }  @{Net::OAuth->request($type)->all_params()};
+    if (defined($type)) {
+        if ($params =~ m/^m.*/i) { 
+		    %oauth = map { ($_) => undef }  @{Net::OAuth->request($type)->all_message_params()};
+        }
+        elsif ($params =~ m/^a.*/i) {
+		    %oauth = map { ($_) => undef }  @{Net::OAuth->request($type)->all_api_params()};
+        }
+        else {
+		    %oauth = map { ($_) => undef }  @{Net::OAuth->request($type)->all_params()};
+        }
 		foreach my $param (keys %oauth) {
 			if (defined ($self->{oauth}->{$param})) { $oauth{$param} = $self->{oauth}->{$param}; }
 		}
 		return %oauth;
 	}
-	elsif ($self->is_oauth) {
+	else {
 		return %{$self->{oauth}};
 	}
-	else {
+}
+
+#
+# Use perl core Storable for persistent oauth API object
+#
+sub oauth_export_storable_config {
+
+	my $self = shift;
+	my $file = shift;
+
+	unless ($self->is_oauth) {
+		carp "\noauth_export_storable_config called for Non-OAuth Flickr::API object\n";
 		return;
 	}
+
+	open my $EXPORT, '>', $file or croak "\nCannot open $file for write: $!\n";
+	my %config = $self->oauth_export_config();
+	store_fd(\%config, $EXPORT);
+	close $EXPORT;
+	return;
 }
+
+#
+#  Use perl core Storable for re-vivifying a persistent oauth API object
+#
+sub oauth_import_storable_config {
+
+	my $class = shift;
+	my $file = shift;
+
+	open my $IMPORT, '<', $file or croak "\nCannot open $file for read: $!\n";
+	my $config_ref = retrieve_fd($IMPORT);
+	close $IMPORT;
+	my $api = Flickr::API->new($config_ref);
+	return $api;
+}
+
 
 sub is_oauth {
     my $self = shift;
@@ -384,6 +517,19 @@ sub is_oauth {
         return 0;
     }
 }
+
+
+sub get_oauth_request_type {
+    my $self = shift;
+
+    if (defined $self->{api_type} and $self->{api_type} eq 'oauth') {
+		return $self->{oauth_request};
+    }
+    else {
+        return undef;
+    }
+}
+
 
 #
 # Private methods
@@ -473,7 +619,7 @@ Flickr::API - Perl interface to the Flickr API
 
 =head1 DESCRIPTION
 
-A simple interface for using the Flickr API.
+An interface for using the Flickr API.
 
 C<Flickr::API> is a subclass of L<LWP::UserAgent>, so all of the various
 proxy, request limits, caching, etc are available. C<Flickr::API> can
@@ -517,6 +663,11 @@ actual unicode strings (unicode=1) in the request.
 These values are used by L<Net::OAuth> to assemble and sign OAuth I<consumer> request
 Flickr API calls. The defaults are usually fine.
 
+=item  C<callback>
+
+The callback is used in oauth authentication. When Flickr authorizes you, it returns the
+access token and access token secret in a callback URL. This defaults to https://127.0.0.1/
+
 =item C<token> and C<token_secret>
 
 These values are used by L<Net::OAuth> to assemble and sign OAuth I<protected resource> request
@@ -543,23 +694,69 @@ For web-based applications I<$frob> is an optional parameter.
 
 Returns undef if a secret was not specified when creating the C<Flickr::API> object.
 
-=item C<oauth_export_config()>
+=item C<oauth_export_config([$type,$params])>
 
-Returns a hash of the appropriate parameters for a particular oauth message
-type if the message type is specified and is one of the message types handled
-by L<Net::OAuth>. The matching key/value pairs from the L<Flickr::API> object 
-are returned, otherwise the value is undef.
+Returns a hash of all or part of the OAuth portion of the Flickr::API object
 
-  my %config = $api->oauth_export_config('protected resource');
+=over
 
-Alternatively, if called without a message type, the entire oauth
-configuration from the L<Flickr::API> object is returned, including
-L<Net::OAuth> I<Request Token> and I<Access Token> objects if present.
+=item oauth message type: one of C<Consumer>, C<Protected Resource>, C<Request Token>, C<Authorize User> or C<Access Token>
 
-  my %config = $api->oauth_export_config();
+This is one of the the message type that L<Net::OAuth> handles. Message type is optional.
+
+=item oauth parameter set: C<message> or C<API> or undef.
+
+L<Net::OAuth> will return message params, api params or all params depending on what is requested.
+All params is the default.
+
+=back
+
+If C<message type> is specified oauth_export_config will return a hash of the OAuth
+parameters for the specified type. Further, if parameter is specified, then
+oauth_export_config returns either either the set of message parameters or
+api parameters for the message type. If parameter is not specified then both
+parameter type are returned. For example:
+
+=over
+
+my %config = $api->oauth_export_config('protected resource');
+
+or
+
+my %config = $api->oauth_export_config('protected resource','message');
+
+=back
+
+When oauth_export_config is called without arguments, then it returns the OAuth
+portion of the L<Flickr::API> object. If present the L<Net::OAuth> I<Request Token> 
+and I<Access Token> objects are also included.
+
+=over
+
+my %config = $api->oauth_export_config();
+
+=back
 
 This method can be used to extract and save the OAuth parameters for
 future use.
+
+=item C<oauth_export_storable_config(filename)>
+
+This method wraps oauth_export_config with a file open and storable
+store_fd to add some persistence to an oauth flavored Flickr::API
+object.
+
+=item C<oauth_import_storable_config(filename)>
+
+This method retrieves a storable oauth config of a Flickr::API object
+and revivifies the object. 
+
+=item C<get_oauth_request_type()>
+
+Returns the oauth request type in the Flickr::API object. Some Flickr methods
+will require a C<protected resource> request type and others a simple C<consumer>
+request type.
+
 
 =item C<oauth_request_token(\%args)>
 

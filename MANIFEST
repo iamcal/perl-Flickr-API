@@ -1,12 +1,19 @@
 lib/Flickr/API.pm
 lib/Flickr/API/Request.pm
 lib/Flickr/API/Response.pm
+examples/dump_stored_config.pl
 examples/flickr_oauth_authentication.pl
 examples/flickr_method_test_echo.pl
 examples/flickr_method_test_login.pl
+examples/make_stored_config.pl
 Makefile.PL
 MANIFEST
 README
 t/01-test.t
+t/02-oauth_api.t
+t/03-oauth_consumer.t
+t/04-oauth_requesttoken.t
+t/05-oauth_authentication.t
+t/06-oauth-authenticated-methods.t
 Changes
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -65,13 +65,13 @@ method with an optional I<callback> specified.
 
   my $api = Flickr::API->new($cli_args);
 
-  $api->oauth_request_token({'callback' => 'http:127.0.0.1'});
+  $api->oauth_request_token({'callback' => 'https://127.0.0.1'});
 
 =cut
 
 my $api = Flickr::API->new($cli_args);
 
-$api->oauth_request_token({'callback' => 'http:127.0.0.1'});
+$api->oauth_request_token({'callback' => 'https://127.0.0.1'});
 
 =head2 Flickr Step 1, Flickr: return a request token.
 
