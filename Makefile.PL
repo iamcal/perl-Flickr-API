@@ -9,7 +9,7 @@ warn <<EOT;
 #  Some of the OAuth tests require information from you.               #
 #                                                                      #
 #  An easy way to assemble this information is to execute the script:  #
-#  example/make_stored_config.pl                                       #
+#  example/flickr_make_stored_config.pl                                #
 #  Which (1) prompts you for a filename, consumer_key, consumer_secret,#
 #  and callback url; (2) builds a hash with this information; and (3)  #
 #  uses Storable to save the hash in a file easily processed by a test #
@@ -44,11 +44,11 @@ WriteMakefile(
 		'HTTP::Message' => 1.56, # first version of libwww that supports decoded_content()
 		'URI' => 1.18,
 		'XML::Parser::Lite::Tree' => 0.06,
-									'XML::Simple' => 0,
+		'XML::Simple' => 0,
 		'Digest::MD5' => 0,
 		'Test::More' => 0,
         'Net::OAuth' => 0,
-								   },
+			   },
 			  'TEST_REQUIRES'  =>  {
 									'Term::ReadKey' => 0,
 									'Getopt::Long' => 0,
@@ -58,7 +58,7 @@ WriteMakefile(
                 'examples/flickr_oauth_authentication.pl',
                 'examples/flickr_method_test_echo.pl',
                 'examples/flickr_method_test_login.pl',
-			    'examples/dump_stored_config.pl',
-			    'examples/make_stored_config.pl',
+                'examples/flickr_dump_stored_config.pl',
+                'examples/flickr_make_stored_config.pl',
                 ]
 );

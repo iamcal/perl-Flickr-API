@@ -1,11 +1,12 @@
 lib/Flickr/API.pm
 lib/Flickr/API/Request.pm
 lib/Flickr/API/Response.pm
-examples/dump_stored_config.pl
+examples/flickr_dump_stored_config.pl
 examples/flickr_oauth_authentication.pl
 examples/flickr_method_test_echo.pl
 examples/flickr_method_test_login.pl
-examples/make_stored_config.pl
+examples/flickr_make_stored_config.pl
+LICENSE
 Makefile.PL
 MANIFEST
 README

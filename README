@@ -30,7 +30,8 @@ make test MAKETEST_OAUTH_CFG=$HOME/oauth-testing.st [TEST_VERBOSE=1]
 There are two scripts in the examples directory that can be used to build
 and verify a Storable.pm format configuration file:
 
-examples/make_stored_config.pl and examples/dump_stored_config.pl
+examples/flickr_make_stored_config.pl and 
+examples/flickr_dump_stored_config.pl
 
 When using OAuth, the api_key and api_secret are called 
 the consumer_key and consumer_secret respectively.
