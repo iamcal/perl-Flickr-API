@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More tests => 17;
 use Storable;
-use Data::Dumper::Simple;
 use XML::Simple qw(:strict);
 use Flickr::API;
 
@@ -86,7 +85,6 @@ SKIP: {
 
 			isnt($ref->{person}->{nsid}, undef, "Did flickr.prefs.getPrivacy return nsid");
 			isnt($ref->{person}->{privacy}, undef, "Did flickr.prefs.getPrivacy return privacy");
-			warn Dumper($ref);
 
 		}
 	}
