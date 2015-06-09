@@ -19,14 +19,15 @@ my $out_cfg_file = $config_file;
 my $config_ref;
 
 my $api;
-
-my $term   = Term::ReadLine->new('Testing Flickr::API');
-$term->ornaments(0);
+my $term;
 
 
 SKIP: {
     skip "Skipping authentication tests,  oauth config not specified via \$ENV{MAKETEST_OAUTH_CFG}", 21
 	  if !$config_file;
+
+	$term   = Term::ReadLine->new('Testing Flickr::API');
+	$term->ornaments(0);
 
     my $fileflag=0;
     if (-r $config_file) { $fileflag = 1; }

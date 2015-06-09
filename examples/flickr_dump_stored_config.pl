@@ -47,6 +47,6 @@ while ($loop == 0) {
 }
 
 
-print "\n\Retrieved\n\n",Dumper($config),"\nfrom ",$cfgfile," using Storable\n\n";
+print "\n\nRetrieved\n\n",Dumper($config),"\nfrom ",$cfgfile," using Storable\n\n";
 
 exit;
