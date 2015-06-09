@@ -15,7 +15,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 sub new {
 	my $class = shift;
@@ -844,7 +844,13 @@ Auth API patches provided by Aaron Straup Cope
 
 Subclassing patch from AHP
 
-OAuth patches and additions provided by Louis B. Moore
+OAuth patches and additions
+Copyright (C) 2014-2015 Louis B. Moore <lbmoore@cpan.org>
+License: Perl Artistic License 2.0
+
+=head1 LICENSE
+
+This program is released under the Artistic License 2.0 by The Perl Foundation.
 
 =head1 SEE ALSO
 
