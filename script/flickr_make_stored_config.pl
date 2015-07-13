@@ -368,15 +368,15 @@ When you B<make test>, add the environment variable MAKETEST_OAUTH_CFG,
 MAKETEST_FLICKR_CFG or both; each pointing to the configuration file
 you specified. The command should look something like:
 
-make test MAKETEST_OAUTH_CFG=/home/myusername/test-flickr-oauth.cfg
+  make test MAKETEST_OAUTH_CFG=/home/myusername/test-flickr-oauth.cfg
 
-  or
+or
 
-make test MAKETEST_FLICKR_CFG=/home/myusername/test-flickrs-auth.cfg
+  make test MAKETEST_FLICKR_CFG=/home/myusername/test-flickrs-auth.cfg
  
- or
+or
 
-make test MAKETEST_FLICKR_CFG=/home/myusername/test-flickrs-auth.cfg \
+  make test MAKETEST_FLICKR_CFG=/home/myusername/test-flickrs-auth.cfg \
           MAKETEST_OAUTH_CFG=/home/myusername/test-flickr-oauth.cfg
 
 

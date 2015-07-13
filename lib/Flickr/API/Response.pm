@@ -23,6 +23,7 @@ sub init_flickr {
     $self->{success} = 0;
     $self->{error_code} = 0;
     $self->{error_message} = '';
+    return;
 }
 
 sub set_fail {
@@ -30,6 +31,7 @@ sub set_fail {
     $self->{success} = 0;
     $self->{error_code} = $code;
     $self->{error_message} = $message;
+    return;
 }
 
 sub set_ok {
@@ -37,6 +39,7 @@ sub set_ok {
     $self->{success} = 1;
     $self->{tree} = $tree;
     $self->{hash} = $hashref;
+    return;
 }
 
 #
@@ -159,7 +162,7 @@ Returns the args passed to flickr with the method that produced this response
 
 Returns the Flickr Error Code, if any
 
-=item C<error_code()>
+=item C<error_message()>
 
 Returns the Flickr Error Message, if any
 

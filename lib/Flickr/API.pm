@@ -733,10 +733,6 @@ Flickr::API - Perl interface to the Flickr API
   https://127.0.0.1/?oauth_token=12345678901234567-890abcdefedcba98&oauth_verifier=cafe12345678feed
 
 
-=head2 etc
-
-
-
 =head1 DESCRIPTION
 
 An interface for using the Flickr API.
@@ -852,15 +848,12 @@ then export_config returns either either the set of B<message> parameters or
 B<api> parameters for the message type. If parameter is not specified then both
 parameter type are returned. For example:
 
-=over
-
-my %config = $api->export_config('protected resource');
+  my %config = $api->export_config('protected resource');
 
 or
 
-my %config = $api->export_config('protected resource','message');
+  my %config = $api->export_config('protected resource','message');
 
-=back
 
 When export_config is called without arguments, then it returns the OAuth
 portion of the L<Flickr::API> object. If present the L<Net::OAuth> I<Request Token>
@@ -890,14 +883,14 @@ and I<Access Token> objects are also included.
             'version' => '1.0'
           };
 
-=over
-
   my %config = $api->export_config();
 
 =back
 
 This method can be used to extract and save the API parameters for
 future use.
+
+=over
 
 =item C<export_storable_config(filename)>
 
