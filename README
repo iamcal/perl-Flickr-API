@@ -1,7 +1,7 @@
 Flickr::API
 ===========
 
-Simple interface to the Flickr API.
+An interface to the Flickr API, including OAuth authentication.
 
 
 INSTALLATION
@@ -10,36 +10,63 @@ To install this module type the following:
 
    perl Makefile.PL
    make
-   make test
+   make test [ MAKETEST_OAUTH_CFG=config_file, MAKETEST_FLICKR_CFG=other_config ]
    make install
-
 
 
 A NOTE ON TESTING
 
-Testing OAuth authentication requires, at minimum, your Flickr
-api_key and api_secret; a file with some minimal configuration
-data in Storable.pm format that the tests can read and write;
-the ability to open a url on Flickr; and the ability to retrieve 
-a redirect from Flickr. Since there is some user interaction 
-required, full OAuth testing has to be done manually with something
+Testing authentication requires, at minimum, your Flickr api_key
+and api_secret; a file with some minimal configuration data in
+Storable.pm format that the tests can read and write; the ability
+to open a url on Flickr; and the ability to retrieve a redirect
+from Flickr. Since there is some user interaction required, full
+authentication testing has to be done manually with something
 like:
 
 make test MAKETEST_OAUTH_CFG=$HOME/oauth-testing.st [TEST_VERBOSE=1]
 
-There are two scripts in the examples directory that can be used to build
+or
+
+make test MAKETEST_FLICKR_CFG=$HOME/flickr-auth-testing.st [TEST_VERBOSE=1]
+
+or even
+
+make test MAKETEST_OAUTH_CFG=$HOME/oauth-testing.st \
+ MAKETEST_FLICKR_CFG=$HOME/flickr-auth-testing.st [TEST_VERBOSE=1]
+
+
+There are two scripts in the script directory that can be used to build
 and verify a Storable.pm format configuration file:
 
-examples/flickr_make_stored_config.pl and 
-examples/flickr_dump_stored_config.pl
+script/flickr_make_stored_config.pl and 
+script/flickr_dump_stored_config.pl
 
-When using OAuth, the api_key and api_secret are called 
-the consumer_key and consumer_secret respectively.
+When using OAuth, the api_key and api_secret are called the consumer_key
+and consumer_secret respectively. When using the deprecated Flickr
+authentication, the api_key and api_secret are called key and secret
+respectively.
 
-It is possible to use the OAuth testing to produce a configuration
-in storable format that can be imported into the Flickr::API for
-future use.
+It is possible to use authentication testing to produce a configuration
+in storable format that can be imported into the Flickr::API for future use.
 
+
+MORE ON AUTHENTICATION
+
+When using the original Flickr authentication, there are two methods:
+web-based and non-web-based. For web-based the developer defines a
+callback URL, which is where the Flickr will redirect the session,
+along with a frob.
+
+For non-webbased, you need to make a call to flickr.auth.getFrob to
+obtain the frob to exchange for a token. The tests only deal with
+web-based authentication. In general, since Flickr deprecated their
+original authentication in favor of OAuth, more effort is dedicated
+to OAuth.
+
+If you are using Flickr's authentication, and you receive an
+"Oops! Flickr can't find a valid callback URL." page, then you
+are calling an API that is not web-based.
 
 
 DEPENDENCIES
@@ -47,27 +74,27 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   Carp
+  Data::Dumper
   Digest::MD5
   Encode
+  Getopt::Long
   HTTP::Request
   HTTP::Response
   LWP::UserAgent
   Net::OAuth
   Scalar::Util
   Storable
+  Term::ReadLine
   URI
   XML::Parser::Lite::Tree
+  XML::LibXML::Simple
 
 
 Testing this module and using the examples additionally require:
 
-  Data::Dumper
   File::Temp
-  Getopt::Long
-  Term::ReadKey
-  Term::ReadLine
   Test::More
-  XML::Simple
+  Test::Script
 
 
 COPYRIGHT AND LICENCE

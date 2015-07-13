@@ -35,3 +35,20 @@ Changes to Flickr::API
  * Added OAuth authentication to Flickr::API and Flickr::API::Request
  * Added some examples
 
+1.12, 1.13, 2015-06-09
+ * Cleaned up minor bugs found by testers, improved kwalitee
+ * Clarified licensing
+
+1.14
+ * Added 5.008 as minimum Perl version
+ * Moving from XML::Simple to XML::LibXML::Simple
+ * Remove example from automatically installing in scripts (Request 105426)
+ * move dump and make config scripts to bin and made them install-worthy (Request 105426)
+ * Clarified licenses in examples (Request 105426)
+ * Rename oauth_export_config to export_config and add ability to export
+   Flickr's native, if deprecated, configuration. Similar renames and
+   reasons for export_storable_config and import_storable_config.
+ * Added a hashref of the response content in addition to a tree
+ * Added a number of accessor methods to Response.pm
+ * Made code a little more "Perl Best Practices"-ish
+ * Rename sign_args to _sign_args

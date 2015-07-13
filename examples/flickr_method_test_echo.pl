@@ -16,7 +16,7 @@ an example for using either OAuth or Old School Flickr
 use warnings;
 use strict;
 use Flickr::API;
-use XML::Simple qw(:strict);
+use XML::LibXML::Simple;
 use Getopt::Long;
 
 =pod
@@ -91,7 +91,7 @@ else {
 
 }
 
-my $xs = XML::Simple->new(ForceArray => 0);
+my $xs = XML::LibXML::Simple->new(ForceArray => 0);
 
 my $response = $api->execute_method('flickr.test.echo', {
 														 'foo' => 'bar',
@@ -115,14 +115,13 @@ __END__
 
 =head1 AUTHOR
 
-Louis B. Moore <lbmoore at hethcote.com> Based on the code in Flickr::API.
+Louis B. Moore <lbmoore at cpan.org> Based on the code in Flickr::API.
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2014, Louis B. Moore
 
-This program is free software; you may redistribute it and/or 
-modify it under the same terms as Perl itself.
+This program is released under the Artistic License 2.0 by The Perl Foundation.
 
 =cut
 
