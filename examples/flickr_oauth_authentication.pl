@@ -188,14 +188,13 @@ __END__
 
 =head1 AUTHOR
 
-Louis B. Moore <lbmoore at hethcote.com>
+Louis B. Moore <lbmoore at cpan.org> 
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2014, Louis B. Moore
 
-This program is free software; you may redistribute it and/or 
-modify it under the same terms as Perl itself.
+This program is released under the Artistic License 2.0 by The Perl Foundation.
 
 =cut
 
