@@ -8,91 +8,91 @@ use URI;
 use Encode qw(encode_utf8);
 
 our @ISA = qw(HTTP::Request);
-our $VERSION = '0.04';
+our $VERSION = '1.15';
 
 sub new {
-	my $class = shift;
-	my $options = shift;
-	my $self;
+    my $class = shift;
+    my $options = shift;
+    my $self;
 
-	if ($options->{api_type} eq 'oauth') {
+    if ($options->{api_type} eq 'oauth') {
 
-		$options->{args}->{request_method}='POST';
-		$options->{args}->{request_url}=$options->{rest_uri};
+        $options->{args}->{request_method}='POST';
+        $options->{args}->{request_url}=$options->{rest_uri};
 
-		$Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+        $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
-		my $orequest;
+        my $orequest;
 
-		if (defined($options->{args}->{token})) {
+        if (defined($options->{args}->{token})) {
 
-			$orequest = Net::OAuth->request('protected resource')->new(%{$options->{args}});
+            $orequest = Net::OAuth->request('protected resource')->new(%{$options->{args}});
 
-		}
-		else {
+        }
+        else {
 
-			$orequest = Net::OAuth->request('consumer')->new(%{$options->{args}});
+            $orequest = Net::OAuth->request('consumer')->new(%{$options->{args}});
 
-		}
+        }
 
-		$orequest->sign();
+        $orequest->sign();
 
-		my $h = HTTP::Headers->new;
-		$h->header('Content-Type' => 'application/x-www-form-urlencoded');
-		$h->header('Content-Length' => length($orequest->to_post_body));
+        my $h = HTTP::Headers->new;
+        $h->header('Content-Type' => 'application/x-www-form-urlencoded');
+        $h->header('Content-Length' => length($orequest->to_post_body));
 
-		$self = HTTP::Request->new(
-								   $options->{args}->{request_method},
-								   $options->{rest_uri},
-								   $h,
-								   $orequest->to_post_body());
+        $self = HTTP::Request->new(
+            $options->{args}->{request_method},
+            $options->{rest_uri},
+            $h,
+            $orequest->to_post_body());
 
-		$self->{api_method} = $options->{method};
-		$self->{api_type}   = $options->{api_type};
-		$self->{unicode}    = $options->{unicode} || 0;
+        $self->{api_method} = $options->{method};
+        $self->{api_type}   = $options->{api_type};
+        $self->{unicode}    = $options->{unicode} || 0;
 
-	}
-	else {
+    }
+    else {
 
-		$self = HTTP::Request->new;
+        $self = HTTP::Request->new;
 
-		$self->{api_method} = $options->{method};
+        $self->{api_method} = $options->{method};
 
-		$self->{api_type}   = $options->{api_type} || 'flickr';
-		$self->{unicode}    = $options->{unicode} || 0;
-		$self->{api_args}   = $options->{args};
-		$self->{rest_uri}   = $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
-		$self->method('POST');
-		$self->uri($self->{rest_uri});
+        $self->{api_type}   = $options->{api_type} || 'flickr';
+        $self->{unicode}    = $options->{unicode} || 0;
+        $self->{api_args}   = $options->{args};
+        $self->{rest_uri}   = $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
+        $self->method('POST');
+        $self->uri($self->{rest_uri});
 
-	}
+    }
 
-	bless $self, $class;
+    bless $self, $class;
 
-	return $self;
+    return $self;
 }
 
 sub encode_args {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my $content;
-	my $url = URI->new('https:');
+    my $content;
+    my $url = URI->new('https:');
 
-	if ($self->{unicode}){
-		for my $k(keys %{$self->{api_args}}){
-			$self->{api_args}->{$k} = encode_utf8($self->{api_args}->{$k});
-		}
-	}
-	$url->query_form(%{$self->{api_args}});
-	$content = $url->query;
+    if ($self->{unicode}){
+        for my $k(keys %{$self->{api_args}}){
+            $self->{api_args}->{$k} = encode_utf8($self->{api_args}->{$k});
+        }
+    }
+    $url->query_form(%{$self->{api_args}});
+    $content = $url->query;
 
 
-	$self->header('Content-Type' => 'application/x-www-form-urlencoded');
-	if (defined($content)) {
-		$self->header('Content-Length' => length($content));
-		$self->content($content);
-	}
-	return;
+    $self->header('Content-Type' => 'application/x-www-form-urlencoded');
+    if (defined($content)) {
+        $self->header('Content-Length' => length($content));
+        $self->content($content);
+    }
+    return;
 }
 
 1;
@@ -113,8 +113,8 @@ Flickr::API::Request - A request to the Flickr API
   my $api = Flickr::API->new({'consumer_key' => 'your_api_key'});
 
   my $request = Flickr::API::Request->new({
-  	'method' => $method,
-  	'args' => {},
+      'method' => $method,
+      'args' => {},
   });
 
   my $response = $api->execute_request($request);
@@ -127,8 +127,8 @@ Flickr::API::Request - A request to the Flickr API
   my $api = Flickr::API->new({'key' => 'your_api_key'});
 
   my $request = Flickr::API::Request->new({
-  	'method' => $method,
-  	'args' => {},
+      'method' => $method,
+      'args' => {},
   });
 
   my $response = $api->execute_request($request);
