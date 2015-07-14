@@ -3,7 +3,6 @@ use warnings;
 use Test::More;
 use Storable;
 use Flickr::API;
-use Data::Dumper::Simple;
 
 if (defined($ENV{MAKETEST_FLICKR_CFG})) {
 	plan( tests => 15 );

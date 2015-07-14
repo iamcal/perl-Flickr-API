@@ -6,7 +6,7 @@ use HTTP::Response;
 
 our @ISA = qw(HTTP::Response);
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 sub new {
     my $class = shift;

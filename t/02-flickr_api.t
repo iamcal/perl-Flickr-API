@@ -4,7 +4,6 @@ use Test::More tests => 10;
 use File::Temp ();
 
 use Flickr::API;
-use Data::Dumper::Simple;
 ########################################################
 #
 # create a generic flickr api with oauth consumer object
