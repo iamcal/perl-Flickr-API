@@ -95,7 +95,7 @@ SKIP: {
 	  SKIP: {
 
 			skip "Skip getting a token, we already have " . $api->{flickr}->{token} , 3
-			  if $api->{flickr}->{token} =~ m/^[0-9a-f\-]+/i;
+			  if defined($api->{flickr}->{token}) and $api->{flickr}->{token} =~ m/^[0-9a-f\-]+/i;
 
 			my $rc = $api->flickr_access_token($frob);
 
