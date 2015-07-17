@@ -47,88 +47,73 @@ my $api;
 
 my %args;
 
-GetOptions (
-			$config,
-			'use_api=s',
-			'key=s',
-			'secret=s',
-			'token=s',
-			'token_secret=s',
-		   );
+GetOptions(
+    $config,
+    'use_api=s',
+    'key=s',
+    'secret=s',
+    'token=s',
+    'token_secret=s',
+);
 
 
 =head1 CALL DIFFERENCES
 
- if ($config->{use_api} =~ m/flickr/i) {
+    if ($config->{use_api} =~ m/flickr/i) {
+        $api = Flickr::API->new({
+            'key'        => $config->{key},
+            'secret'     => $config->{secret},
+            'auth_token' => $config->{token},
+        });
 
- 	$api = Flickr::API->new({
-							 'key'        => $config->{key},
-							 'secret'     => $config->{secret},
-							 'auth_token' => $config->{token},
-							});
+        $args{'api_key'}    = $config->{key};
+        $args{'auth_token'} = $config->{token};
+    }
+    elsif ($config->{use_api} =~ m/oauth/i) {
+        $api = Flickr::API->new({
+            'consumer_key'    => $config->{key},
+            'consumer_secret' => $config->{secret},
+            'token'           => $config->{token},
+            'token_secret'    => $config->{token_secret},
+        });
 
-	$args{'api_key'}    = $config->{key};
-	$args{'auth_token'} = $config->{token};
-
- }
- elsif ($config->{use_api} =~ m/oauth/i) {
-
-	$api = Flickr::API->new({
-							 'consumer_key'    => $config->{key},
-							 'consumer_secret' => $config->{secret},
-							 'token'           => $config->{token},
-							 'token_secret'    => $config->{token_secret},
-							});
-
-	$args{'consumer_key'} = $config->{key};
-	$args{'token'} = $config->{token};
-
- }
- else {
-
-	die "\n --use_api must be either 'flickr' or 'oauth' \n";
-
- }
+        $args{'consumer_key'} = $config->{key};
+        $args{'token'} = $config->{token};
+    }
+    else {
+        die "\n --use_api must be either 'flickr' or 'oauth' \n";
+    }
 
 =cut
 
-if ($config->{use_api} =~ m/flickr/i) {
+if ($config->{use_api} && $config->{use_api} eq 'flickr') {
+    $api = Flickr::API->new({
+        'key'        => $config->{key},
+        'secret'     => $config->{secret},
+        'auth_token' => $config->{token},
+    });
 
-	$api = Flickr::API->new({
-							 'key'        => $config->{key},
-							 'secret'     => $config->{secret},
-							 'auth_token' => $config->{token},
-							});
-
-	$args{'api_key'}    = $config->{key};
-	$args{'auth_token'} = $config->{token};
-
+    $args{'api_key'}    = $config->{key};
+    $args{'auth_token'} = $config->{token};
 }
-elsif ($config->{use_api} =~ m/oauth/i) {
+elsif ($config->{use_api} && $config->{use_api} eq 'oauth') {
+    $api = Flickr::API->new({
+        'consumer_key'    => $config->{key},
+        'consumer_secret' => $config->{secret},
+        'token'           => $config->{token},
+        'token_secret'    => $config->{token_secret},
+    });
 
-	$api = Flickr::API->new({
-							 'consumer_key'    => $config->{key},
-							 'consumer_secret' => $config->{secret},
-							 'token'           => $config->{token},
-							 'token_secret'    => $config->{token_secret},
-							});
-
-	$args{'consumer_key'} = $config->{key};
-	$args{'token'} = $config->{token};
-
+    $args{'consumer_key'} = $config->{key};
+    $args{'token'} = $config->{token};
 }
 else {
-
-	die "\n --use_api must be either 'flickr' or 'oauth' \n";
-
+    die "\n --use_api must be either 'flickr' or 'oauth'\n";
 }
 
 my $xs = XML::LibXML::Simple->new(ForceArray => 0);
 
-my $response = $api->execute_method(
-									'flickr.test.login',
-									\%args,
-								   );
+my $response = $api->execute_method('flickr.test.login', \%args);
 
 my $content = $response->decoded_content();
 $content = $response->content() unless defined $content;
@@ -136,18 +121,11 @@ $content = $response->content() unless defined $content;
 my $ref = $xs->XMLin($content,KeyAttr => []);
 
 if ($api->is_oauth) {
-
-	print "\nOAuth formated login status for ",$ref->{user}->{username},": ",$ref->{stat},"\n";
-
+    print "\nOAuth formated login status: ",$ref->{stat},"\n";
 }
 else {
-
-
-	print "\nFlickr formated login status for ",$ref->{user}->{username},": ",$ref->{stat},"\n";
-
+    print "\nFlickr formated login status: ",$ref->{stat},"\n";
 }
-
-print "\n";
 
 exit;
 
