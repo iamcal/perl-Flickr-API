@@ -52,3 +52,16 @@ Changes to Flickr::API
  * Added a number of accessor methods to Response.pm
  * Made code a little more "Perl Best Practices"-ish
  * Rename sign_args to _sign_args
+
+1.15
+ * Removed some debugging leftovers
+ * bumped version
+
+1.16
+ * merged in horsepunchkid's $perms fixes. (API requires more explicit perms arguments)
+ * merged in horsepunchkid's fixes in examples/.
+ * fleshed out the $perms fixes, changed from warn to carp.
+ * Added to API.pm POD to reflect $perms fixes.
+ * Added tests to reflect $perms fixes.
+ * bumped version in prep for PAUSE upload.
+

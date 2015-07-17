@@ -16,7 +16,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.15';
+our $VERSION = '1.16';
 
 
 
@@ -408,13 +408,16 @@ sub oauth_authorize_uri {
     my %args    = %{$self->{oauth}};
 
     $self->{oauth_request} = 'User Authentication';
-    $args{perms}           = $options->{perms} || 'read';
+    $args{perms}           = lc($options->{perms}) || 'read';
+
+    carp "\nThe 'perms' parameter must be one of: read, write, delete\n"
+        and return unless defined($args{perms}) && $args{perms} =~ /^(read|write|delete)$/;
 
     $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
     return $self->{auth_uri} .
       '?oauth_token=' . $args{'request_token'}{'token'} .
-      '&perms=' . $args{'perms'};
+      '&perms=' . $args{perms};
 
 }
 
@@ -433,6 +436,11 @@ sub request_auth_url {
         return undef;
 
     }
+
+    $perms = lc($perms);
+
+    carp "\nThe 'perms' parameter must be one of: read, write, delete\n"
+        and return unless defined($perms) && $perms =~ /^(read|write|delete)$/;
 
     return undef unless defined $self->{api_secret} && length $self->{api_secret};
     warn "The 'perms' parameter must be one of: read, write, delete"
@@ -807,6 +815,8 @@ if a secret was specified when creating the L<Flickr::API> object.
 Returns a L<URI> object representing the URL that an application must redirect a user to for approving
 an authentication token.
 
+C<$perms> must be B<read>, B<write>, or B<delete>.
+
 For web-based applications I<$frob> is an optional parameter.
 
 Returns undef if a secret was not specified when creating the C<Flickr::API> object.
@@ -989,7 +999,7 @@ a request token.
 
 =item C<perms>
 
-Permission the application is requesting, defaults to B<read>.
+Permission the application is requesting, one of B<read, write, or delete>, defaults to B<read>.
 
 =back
 

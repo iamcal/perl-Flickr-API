@@ -6,12 +6,11 @@ use Term::ReadLine;
 use Flickr::API;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 21 );
+    plan( tests => 22 );
 }
 else {
     plan(skip_all => 'These tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
 }
-
 
 
 my $config_file  = $ENV{MAKETEST_OAUTH_CFG};
@@ -19,7 +18,6 @@ my $config_ref;
 
 my $api;
 my $term;
-
 
 
 $term   = Term::ReadLine->new('Testing Flickr::API');
@@ -31,7 +29,7 @@ is($fileflag, 1, "Is the config file: $config_file, readable?");
 
 SKIP: {
 
-    skip "Skipping authentication tests, oauth config isn't there or is not readable", 20
+    skip "Skipping authentication tests, oauth config isn't there or is not readable", 21
       if $fileflag == 0;
 
     $api = Flickr::API->import_storable_config($config_file);
@@ -41,7 +39,7 @@ SKIP: {
 
   SKIP: {
 
-        skip "Skip request token and authentication tests, access token exists", 18
+        skip "Skip request token and authentication tests, access token exists", 19
           if (defined($api->{oauth}->{token}) and $api->{oauth}->{token} =~ /^[0-9]+-[0-9a-f]+$/);
 
         like($api->{oauth}->{consumer_key},  qr/[0-9a-f]+/i, "Did we get a consumer key from $config_file");
@@ -62,8 +60,12 @@ SKIP: {
 
       SKIP: {
 
-            skip "Skipping authentication tests, oauth request token seems wrong", 14
+            skip "Skipping authentication tests, oauth request token seems wrong", 15
               if $proceed == 0;
+
+            my $perm = $api->oauth_authorize_uri({ 'perms' => 'embolden' });
+
+            is($perm, undef, "Did oauth_authorize_uri object to invalid permission");
 
             my $uri = $api->oauth_authorize_uri({ 'perms' => 'read' });
             my $prompt = "\n\n$uri\n\n" .

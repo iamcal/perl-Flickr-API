@@ -16,7 +16,6 @@ an example for using either OAuth or Old School Flickr
 use warnings;
 use strict;
 use Flickr::API;
-use XML::LibXML::Simple;
 use Getopt::Long;
 
 =pod
@@ -44,28 +43,28 @@ my $config = {};
 my $api;
 
 GetOptions (
-			$config,
-			'use_api=s',
-			'key=s',
-			'secret=s',
-		   );
+    $config,
+    'use_api=s',
+    'key=s',
+    'secret=s',
+);
 
 =head1 CALL DIFFERENCES
 
  if ($config->{use_api} =~ m/flickr/i) {
 
-	$api = Flickr::API->new({'key'    => $config->{key},
+    $api = Flickr::API->new({'key'    => $config->{key},
                              'secret' => $config->{secret}});
  }
  elsif  ($config->{use_api} =~ m/oauth/i) {
 
-	$api = Flickr::API->new({'consumer_key'    => $config->{key},
+    $api = Flickr::API->new({'consumer_key'    => $config->{key},
                              'consumer_secret' => $config->{secret}});
 
 }
  else {
 
- 	die "\n --use_api must be either 'flickr' or 'oauth' \n";
+     die "\n --use_api must be either 'flickr' or 'oauth' \n";
 
  }
 
@@ -73,35 +72,30 @@ GetOptions (
 
 if ($config->{use_api} =~ m/flickr/i) {
 
-	$api = Flickr::API->new({
-							 'key'    => $config->{key},
-							 'secret' => $config->{secret},
-							});
+    $api = Flickr::API->new({
+        'key'    => $config->{key},
+        'secret' => $config->{secret},
+    });
 }
 elsif  ($config->{use_api} =~ m/oauth/i) {
 
-	$api = Flickr::API->new({
-							 'consumer_key'    => $config->{key},
-							 'consumer_secret' => $config->{secret},
-							});
+    $api = Flickr::API->new({
+        'consumer_key'    => $config->{key},
+        'consumer_secret' => $config->{secret},
+    });
 }
 else {
 
-	die "\n --use_api must be either 'flickr' or 'oauth' \n";
+    die "\n --use_api must be either 'flickr' or 'oauth' \n";
 
 }
 
-my $xs = XML::LibXML::Simple->new(ForceArray => 0);
-
 my $response = $api->execute_method('flickr.test.echo', {
-														 'foo' => 'bar',
-														 'baz' => 'quux',
-														});
+                     'foo' => 'bar',
+                     'baz' => 'quux',
+               });
 
-my $content = $response->decoded_content();
-$content = $response->content() unless defined $content;
-
-my $ref = $xs->XMLin($content,KeyAttr => []);
+my $ref = $response->as_hash();
 
 print "\n\n",$ref->{method},"\n";
 print "  Key: foo  received: ",$ref->{foo},"\n";

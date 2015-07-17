@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More tests => 23;
 
 use Flickr::API;
 
@@ -66,9 +66,25 @@ is('b8bac3b2a4f919d04821e43adf59288c', $api->_sign_args({'foo' => "\x{5315}\x{4e
 # check the auth url generator is working
 #
 
-my $uri = $api->request_auth_url('r', 'my_frob');
+my $perm = $api->request_auth_url('enlighten', 'my_frob');
 
-my %expect = parse_query('api_sig=d749e3a7bd27da9c8af62a15f4c7b48f&perms=r&frob=my_frob&api_key=made_up_key');
+is($perm, undef, "Did request_auth_url object to invalid permission");
+
+my $uri = $api->request_auth_url('read', 'my_frob');
+
+my %hash;
+
+$perm  = $api->request_auth_url('write', 'my_frob');
+%hash=parse_query($perm->query);
+
+is($hash{perms}, 'write', "did request_auth_url accept write permissions");
+
+$perm  = $api->request_auth_url('delete', 'my_frob');
+%hash=parse_query($perm->query);
+
+is($hash{perms}, 'delete', "did request_auth_url accept delete permissions");
+
+my %expect = parse_query('api_sig=75522c3db27dfa3e79023a1b58c844a8&perms=read&frob=my_frob&api_key=made_up_key');
 my %got = parse_query($uri->query);
 
 sub parse_query {
@@ -92,7 +108,7 @@ is($uri->scheme, 'https', "Checking return protocol");
 #
 
 $api = Flickr::API->new({'key' => 'key'});
-$uri = $api->request_auth_url('r', 'frob');
+$uri = $api->request_auth_url('read', 'frob');
 
 is($uri, undef, "Checking URL generation without a secret");
 
