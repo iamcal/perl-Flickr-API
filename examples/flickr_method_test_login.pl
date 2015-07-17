@@ -16,7 +16,6 @@ a login example for using either OAuth or Old School Flickr
 use warnings;
 use strict;
 use Flickr::API;
-use XML::LibXML::Simple;
 use Getopt::Long;
 
 
@@ -111,14 +110,10 @@ else {
     die "\n --use_api must be either 'flickr' or 'oauth'\n";
 }
 
-my $xs = XML::LibXML::Simple->new(ForceArray => 0);
 
 my $response = $api->execute_method('flickr.test.login', \%args);
 
-my $content = $response->decoded_content();
-$content = $response->content() unless defined $content;
-
-my $ref = $xs->XMLin($content,KeyAttr => []);
+my $ref = $response->as_hash();
 
 if ($api->is_oauth) {
     print "\nOAuth formated login status: ",$ref->{stat},"\n";
