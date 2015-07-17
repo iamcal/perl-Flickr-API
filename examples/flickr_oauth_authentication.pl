@@ -51,10 +51,10 @@ $Data::Dumper::Sortkeys = 1;
 my $cli_args = {};
 
 GetOptions (
-            $cli_args,
-			'consumer_key=s',
-			'consumer_secret=s',
-           );
+    $cli_args,
+    'consumer_key=s',
+    'consumer_secret=s',
+);
 
 
 =head2 Flickr Step 1, Application: get a request token
@@ -139,11 +139,11 @@ my %hash2;
 
 foreach my $param2 (@parms) {
 
-	my ($key,$val) = split(/=/,$param2);
+    my ($key,$val) = split(/=/,$param2);
 
-	$key =~ s/oauth_//;
+    $key =~ s/oauth_//;
 
-	$hash2{$key}=$val;
+    $hash2{$key}=$val;
 
 }
 
