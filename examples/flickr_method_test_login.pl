@@ -46,7 +46,7 @@ my $api;
 
 my %args;
 
-GetOptions (
+GetOptions(
     $config,
     'use_api=s',
     'key=s',
