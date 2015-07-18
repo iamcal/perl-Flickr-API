@@ -206,7 +206,6 @@ sub execute_method {
 
 }
 
-
 sub execute_request {
     my ($self, $request) = @_;
 
@@ -444,6 +443,8 @@ sub request_auth_url {
         and return unless defined($perms) && $perms =~ /^(read|write|delete)$/;
 
     return undef unless defined $self->{api_secret} && length $self->{api_secret};
+    warn "The 'perms' parameter must be one of: read, write, delete"
+        and return unless $perms && $perms =~ /^(read|write|delete)$/;
 
     my %args = (
         'api_key' => $self->{api_key},
