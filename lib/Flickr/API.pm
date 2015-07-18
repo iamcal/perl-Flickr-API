@@ -443,15 +443,6 @@ sub request_auth_url {
         and return unless defined($perms) && $perms =~ /^(read|write|delete)$/;
 
     return undef unless defined $self->{api_secret} && length $self->{api_secret};
-    warn "The 'perms' parameter must be one of: read, write, delete"
-        and return unless $perms && $perms =~ /^(read|write|delete)$/;
-
-    #----\\\ cut ///-----
-    #
-    warn "The 'perms' parameter must be one of: read, write, delete"
-        and return unless $perms && $perms =~ /^(read|write|delete)$/;
-    #
-    #----/// cut \\\----
 
     my %args = (
         'api_key' => $self->{api_key},
