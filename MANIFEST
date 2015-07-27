@@ -7,6 +7,7 @@ examples/flickr_oauth_authentication.pl
 lib/Flickr/API.pm
 lib/Flickr/API/Request.pm
 lib/Flickr/API/Response.pm
+lib/Flickr/API/Reflection.pm
 LICENSE
 Makefile.PL
 MANIFEST

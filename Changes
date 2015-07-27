@@ -65,3 +65,5 @@ Changes to Flickr::API
  * Added tests to reflect $perms fixes.
  * bumped version in prep for PAUSE upload.
 
+1.17
+ * adding Flickr::API::Reflection

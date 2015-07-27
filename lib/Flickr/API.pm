@@ -16,7 +16,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 
 
@@ -128,6 +128,7 @@ sub new {
     };
 
     bless $self, $class;
+    $self->_initialize();
     return $self;
 }
 
@@ -340,7 +341,8 @@ sub import_storable_config {
     open my $IMPORT, '<', $file or croak "\nCannot open $file for read: $!\n";
     my $config_ref = retrieve_fd($IMPORT);
     close $IMPORT;
-    my $api = Flickr::API->new($config_ref);
+    my $api = $class->new($config_ref);
+    #my $api = Flickr::API->new($config_ref);
     return $api;
 }
 
@@ -619,6 +621,8 @@ sub _make_nonce {
     return md5_hex(rand);
 
 }
+
+sub _initialize {}
 
 
 1;

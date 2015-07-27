@@ -8,7 +8,7 @@ use URI;
 use Encode qw(encode_utf8);
 
 our @ISA = qw(HTTP::Request);
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 sub new {
     my $class = shift;
