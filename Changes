@@ -67,3 +67,4 @@ Changes to Flickr::API
 
 1.17
  * adding Flickr::API::Reflection
+ * Fixed type per RT-106107 
