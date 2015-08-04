@@ -268,7 +268,6 @@ sub execute_request {
 }
 
 
-
 #
 # Persistent config methods
 #
@@ -621,6 +620,7 @@ sub _make_nonce {
     return md5_hex(rand);
 
 }
+
 
 sub _initialize {}
 

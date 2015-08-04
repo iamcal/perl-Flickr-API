@@ -2,6 +2,7 @@ package Flickr::API::Reflection;
 
 use strict;
 use warnings;
+use Carp;
 
 use parent qw( Flickr::API );
 our $VERSION = '1.17';
@@ -10,6 +11,10 @@ our $VERSION = '1.17';
 sub _initialize {
 
     my $self=shift;
+    $self->{flickr}->{status}->{_rc} = 0;
+    $self->{flickr}->{status}->{success} = 1;  # initialize as successful
+    $self->{flickr}->{status}->{error_code} = 0;
+    $self->{flickr}->{status}->{error_message} = '';
     return;
 
 }
@@ -17,26 +22,137 @@ sub _initialize {
 
 sub methods_list {
 
-    my $self = shift;
+    my $self    = shift;
     my $rsp = $self->execute_method('flickr.reflection.getMethods');
-    my @methods = @{$rsp->as_hash()->{methods}->{method}};
-    return @methods;
 
+    if ($rsp->success() == 1) {
+
+        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
+        $self->{flickr}->{status}->{success}        = 1;
+        $self->{flickr}->{status}->{error_code}     = 0;
+        $self->{flickr}->{status}->{error_message} = '';
+
+        return $rsp->as_hash()->{methods}->{method};
+
+    }
+    else {
+
+
+        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
+        $self->{flickr}->{status}->{success}       = 0;
+        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
+        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
+
+        carp "Flickr::API::Reflection Methods list/hash failed with error code: ",$rsp->error_code()," \n ",
+            $rsp->error_message(),"\n";
+
+        my $listref = ();
+        return $listref;
+    }
 }
+
+
+
 
 sub methods_hash {
 
+    my $self      = shift;
+    my $arrayref  = $self->methods_list();
+    my $hashref;
+
+
+    if ($arrayref) {
+
+        %{$hashref} = map {$_ => 1} @{$arrayref};
+
+    }
+    else {
+
+        $hashref = {};
+
+    }
+    return $hashref;
+}
+
+
+sub get_method {
+
+    my $self   = shift;
+    my $method = shift;
+    my $rsp = $self->execute_method('flickr.reflection.getMethodInfo',
+                                    {'method_name' => $method});
+    my $hash = $rsp->as_hash();
+    my $desc = {};
+
+    my $err;
+    my $arg;
+
+    if ($rsp->success() == 1) {
+
+        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
+        $self->{flickr}->{status}->{success}        = 1;
+        $self->{flickr}->{status}->{error_code}     = 0;
+        $self->{flickr}->{status}->{error_message} = '';
+
+        $desc->{$method} = $hash->{method};
+
+        foreach $err (@{$hash->{errors}->{error}}) {
+
+            $desc->{$method}->{error}->{$err->{code}}->{message} = $err->{message};
+            $desc->{$method}->{error}->{$err->{code}}->{content} = $err->{content};
+
+        }
+
+        foreach $arg (@{$hash->{arguments}->{argument}}) {
+
+            $desc->{$method}->{argument}->{$arg->{name}}->{optional} = $arg->{optional};
+            $desc->{$method}->{argument}->{$arg->{name}}->{content}  = $arg->{content};
+
+        }
+    }
+    else {
+
+        carp "Flickr::API::Reflection get method failed with error code: ",$rsp->error_code()," \n ",
+            $rsp->error_message(),"\n";
+
+        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
+        $self->{flickr}->{status}->{success}       = 0;
+        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
+        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
+
+    }
+
+    return $desc;
+}
+
+sub error_code {
+
     my $self = shift;
-    my @methods = $self->methods_list();
-    my %methods = map {$_ => 1} @methods;
-    return %methods;
+    return $self->{flickr}->{status}->{error_code};
 
 }
 
-sub get_method {
-    my $self   = shift;
-    my $method = shift;
-    return;
+sub error_message {
+
+    my $self = shift;
+    my $text = $self->{flickr}->{status}->{error_message};
+    $text =~ s/\&quot;/\"/g;
+    return $text;
+
+}
+
+sub rc {
+
+    my $self = shift;
+    return $self->{flickr}->{status}->{_rc};
+
+}
+
+sub success {
+
+    my $self = shift;
+    return $self->{flickr}->{status}->{success};
+
 }
 
 1;
@@ -60,6 +176,8 @@ or
 
   my @methods = $api->methods_list();
   my %methods = $api->methods_hash();
+
+  my $method = $api->get_method('flickr.reflection.getMethodInfo');
 
 
 =head1 DESCRIPTION
@@ -87,6 +205,21 @@ Returns a hash of Flickr's API methods.
 =item C<get_method>
 
 Stub
+=item C<error_code()>
+
+Returns the Flickr Error Code, if any
+
+=item C<error_message()>
+
+Returns the Flickr Error Message, if any
+
+=item C<success()>
+
+Returns the success or lack thereof from Flickr
+
+=item C<rc()>
+
+Returns the Flickr return code
 
 =back
 

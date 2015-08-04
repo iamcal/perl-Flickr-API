@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use HTTP::Response;
 
-our @ISA = qw(HTTP::Response);
+use parent qw(HTTP::Response);
 
 our $VERSION = '1.17';
 
@@ -80,7 +80,9 @@ sub error_code {
 sub error_message {
 
     my $self = shift;
-    return $self->{error_message};
+    my $text = $self->{error_message};
+    $text =~ s/\&quot;/\"/g;
+    return $text;
 
 }
 
