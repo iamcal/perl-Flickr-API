@@ -341,7 +341,6 @@ sub import_storable_config {
     my $config_ref = retrieve_fd($IMPORT);
     close $IMPORT;
     my $api = $class->new($config_ref);
-    #my $api = Flickr::API->new($config_ref);
     return $api;
 }
 

@@ -219,7 +219,7 @@ Returns the success or lack thereof from Flickr
 
 =item C<rc()>
 
-Returns the Flickr return code
+Returns the Flickr http status code
 
 =back
 
