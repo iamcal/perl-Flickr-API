@@ -82,6 +82,7 @@ This module requires these other modules and libraries:
   HTTP::Response
   LWP::UserAgent
   Net::OAuth
+  parent
   Scalar::Util
   Storable
   Term::ReadLine
