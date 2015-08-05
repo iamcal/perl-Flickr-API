@@ -1,0 +1,38 @@
+Flickr::API::Reflection
+=======================
+
+
+Flickr::API::Reflection is a subclass of Flickr::API with some (hopefully)
+useful additions for using Flickr's flickr.reflection  methods.
+
+
+methods_list - returns a list of Flickr's methods as an array
+methods_hash - returns a list of Flickr's methods as a hashref
+
+get_method - returns the description of a specified method as a
+             hashref
+
+
+
+
+A NOTE ON TESTING
+
+This subclass relies on an existing OAuth configuration as is used by
+earlier tests. When you test it, you will need to have done the `make test'
+with MAKETEST_OAUTH_CFG=config_file specified.
+
+
+
+A NOTE ON AUTHENTICATION
+
+Flickr::API::Reflection was not tested using Flickr's original, now
+deprecated authentication. On the other hand, since the reflection
+methods don't require authentication, just changing key to consumer_key
+and secret to consumer_secret should work.
+
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2015 Louis B. Moore <lbmoore@cpan.org>
+License: Perl Artistic License 2.0

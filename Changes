@@ -1,43 +1,29 @@
 Changes to Flickr::API
 
-0.10, 2008-09-29
- * Work correctly with latest XML::Parser::Lite::Tree (now requires 0.06)
- * Added patch from Flavio Poletti to allow custom api & auth urls
+1.17, 2015-08-04
+ * adding Flickr::API::Reflection
+ * adding t/07-reflection.t to Reflection module
+ * Fixed typo per RT-106107
+ * moved from @ISA to use parent in Request.pm and Response.pm
+ * added call to and method _initialize to API.pm to support
+   inheritance in Reflection.pm et. al.
+ * make import_storable_config more generic in API.pm
+ * make error_message a little prettier in Response.pm
+ * invert changes for chronological convenience
 
-1.01, 2008-09-30
- * incorrectly numbered the previous release. gah
- * updated tests to work when the flickr api isn't hit-able
 
-1.02, 2009-07-31
- * license update for fedora
+1.16, 2015-07-17
+ * merged in horsepunchkid's $perms fixes. (API requires more explicit perms arguments)
+ * merged in horsepunchkid's fixes in examples/.
+ * fleshed out the $perms fixes, changed from warn to carp.
+ * Added to API.pm POD to reflect $perms fixes.
+ * Added tests to reflect $perms fixes.
+ * bumped version in prep for PAUSE upload.
+ 
+1.15
+ * Removed some debugging leftovers
+ * bumped version
 
-1.03, 2009-08-23
- * fix for perl5.6 - when HTTP::Message->decoded_content() comes back empty,
-   use content() instead.
-
-1.04, 2009-08-25
- * re-fix for perl5.6 - just require a newer version of HTTP::Message which supports
-   mime-decoding instead.
-
-1.05, 2012-09-12
- * Updated Flickr API urls from http://www.flickr.com/services/ to http://api.flickr.com/services/.
-
-1.06, 2013-05-11
- * Added `lwpobj` argument, to allow using subclasses of LWP::UserAgent
-
-1.07, 2013-05-23
- * Added flag to enable handling of native Unicode strings
-
-1.08, 2013-06-19
- * Various cleanup from Gabor Szabo
-
-1.11, 2014-12-27
- * Added OAuth authentication to Flickr::API and Flickr::API::Request
- * Added some examples
-
-1.12, 1.13, 2015-06-09
- * Cleaned up minor bugs found by testers, improved kwalitee
- * Clarified licensing
 
 1.14
  * Added 5.008 as minimum Perl version
@@ -53,15 +39,41 @@ Changes to Flickr::API
  * Made code a little more "Perl Best Practices"-ish
  * Rename sign_args to _sign_args
 
-1.15
- * Removed some debugging leftovers
- * bumped version
+1.12, 1.13, 2015-06-09
+ * Cleaned up minor bugs found by testers, improved kwalitee
+ * Clarified licensing
 
-1.16
- * merged in horsepunchkid's $perms fixes. (API requires more explicit perms arguments)
- * merged in horsepunchkid's fixes in examples/.
- * fleshed out the $perms fixes, changed from warn to carp.
- * Added to API.pm POD to reflect $perms fixes.
- * Added tests to reflect $perms fixes.
- * bumped version in prep for PAUSE upload.
+1.11, 2014-12-27
+ * Added OAuth authentication to Flickr::API and Flickr::API::Request
+ * Added some examples
 
+1.08, 2013-06-19
+ * Various cleanup from Gabor Szabo
+
+1.07, 2013-05-23
+ * Added flag to enable handling of native Unicode strings
+
+1.06, 2013-05-11
+ * Added `lwpobj` argument, to allow using subclasses of LWP::UserAgent
+
+1.05, 2012-09-12
+ * Updated Flickr API urls from http://www.flickr.com/services/ to http://api.flickr.com/services/.
+
+1.04, 2009-08-25
+ * re-fix for perl5.6 - just require a newer version of HTTP::Message which supports
+   mime-decoding instead.
+
+1.03, 2009-08-23
+ * fix for perl5.6 - when HTTP::Message->decoded_content() comes back empty,
+   use content() instead.
+
+1.02, 2009-07-31
+ * license update for fedora
+
+1.01, 2008-09-30
+ * incorrectly numbered the previous release. gah
+ * updated tests to work when the flickr api isn't hit-able
+
+0.10, 2008-09-29
+ * Work correctly with latest XML::Parser::Lite::Tree (now requires 0.06)
+ * Added patch from Flavio Poletti to allow custom api & auth urls

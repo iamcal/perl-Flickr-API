@@ -15,7 +15,7 @@ warn <<EOT;
 #                                                                      #
 #  The script requires --config_out=/the/path/to/where/to/write/config #
 #  and can optionally accept arguments for either the Flickr native    #
-#  authentication, or the OAuth authentication for FLickr. Minimally   #
+#  authentication, or the OAuth authentication for Flickr. Minimally   #
 #  you need your key/consumer_key and secret/consumer_secret to build  #
 #  a usable Flickr/OAuth stored configuration.                         #
 #                                                                      #
@@ -52,7 +52,8 @@ WriteMakefile(
         'XML::Parser::Lite::Tree' => 0.06,
         'XML::LibXML::Simple' => 0,
         'Digest::MD5' => 0,
-        'Getopt::Long' => 0,
+        'Getopt::Long' => 1,
+        'parent' => 0,
         'Test::More' => 0,
         'Test::Script' => 0,
         'Net::OAuth' => 0,

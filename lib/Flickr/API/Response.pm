@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use HTTP::Response;
 
-our @ISA = qw(HTTP::Response);
+use parent qw(HTTP::Response);
 
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 sub new {
     my $class = shift;
@@ -80,7 +80,9 @@ sub error_code {
 sub error_message {
 
     my $self = shift;
-    return $self->{error_message};
+    my $text = $self->{error_message};
+    $text =~ s/\&quot;/\"/g;
+    return $text;
 
 }
 
@@ -172,7 +174,7 @@ Returns the success or lack thereof from Flickr
 
 =item C<rc()>
 
-Returns the Flickr return code
+Returns the Flickr http status code
 
 =back
 

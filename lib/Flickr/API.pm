@@ -16,7 +16,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 
 
@@ -128,6 +128,7 @@ sub new {
     };
 
     bless $self, $class;
+    $self->_initialize();
     return $self;
 }
 
@@ -267,14 +268,13 @@ sub execute_request {
 }
 
 
-
 #
 # Persistent config methods
 #
 
 
 #
-# Method to return hash of important Flickr or OAuth paramters.
+# Method to return hash of important Flickr or OAuth parameters.
 # OAuth can also export meaningful subsets of parameters based
 # on OAuth message type.
 #
@@ -315,7 +315,7 @@ sub export_config {
 }
 
 #
-# Use perl core Storable to save important paramters.
+# Use perl core Storable to save important parameters.
 #
 sub export_storable_config {
 
@@ -340,7 +340,7 @@ sub import_storable_config {
     open my $IMPORT, '<', $file or croak "\nCannot open $file for read: $!\n";
     my $config_ref = retrieve_fd($IMPORT);
     close $IMPORT;
-    my $api = Flickr::API->new($config_ref);
+    my $api = $class->new($config_ref);
     return $api;
 }
 
@@ -619,6 +619,9 @@ sub _make_nonce {
     return md5_hex(rand);
 
 }
+
+
+sub _initialize {}
 
 
 1;
@@ -923,7 +926,7 @@ request type.
 Assembles, signs, and makes the OAuth B<Request Token> call, and if sucessful
 stores the L<Net::OAuth> I<Request Token> in the L<Flickr::API> object.
 
-The required paramters are:
+The required parameters are:
 
 =over
 
