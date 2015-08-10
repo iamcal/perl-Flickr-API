@@ -16,7 +16,7 @@ sub new {
     my $options = shift;
     my $self;
 
-    if ($options->{api_type} eq 'oauth') {
+    if (($options->{api_type} || '') eq 'oauth') {
 
         $options->{args}->{request_method}='POST';
         $options->{args}->{request_url}=$options->{rest_uri};
