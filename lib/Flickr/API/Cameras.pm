@@ -1,4 +1,4 @@
-package Flickr::API::Reflection;
+package Flickr::API::Cameras;
 
 use strict;
 use warnings;
@@ -20,10 +20,11 @@ sub _initialize {
 }
 
 
-sub methods_list {
+sub brands_list {
 
     my $self    = shift;
-    my $rsp = $self->execute_method('flickr.reflection.getMethods');
+    my $rsp     = $self->execute_method('flickr.cameras.getBrands');
+    my $listref = ();
 
     if ($rsp->success() == 1) {
 
@@ -32,7 +33,11 @@ sub methods_list {
         $self->{flickr}->{status}->{error_code}     = 0;
         $self->{flickr}->{status}->{error_message} = '';
 
-        return $rsp->as_hash()->{methods}->{method};
+        foreach my $cam (@{$rsp->as_hash()->{brands}->{brand}}) {
+
+            push (@{$listref},$cam->{name});
+
+        }
 
     }
     else {
@@ -43,21 +48,20 @@ sub methods_list {
         $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
         $self->{flickr}->{status}->{error_message} = $rsp->error_message();
 
-        carp "Flickr::API::Reflection Methods list/hash failed with error code: ",$rsp->error_code()," \n ",
+        carp "Flickr::API::Cameras Methods list/hash failed with error code: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
 
-        my $listref = ();
-        return $listref;
     }
+    return $listref;
 }
 
 
 
 
-sub methods_hash {
+sub brands_hash {
 
     my $self      = shift;
-    my $arrayref  = $self->methods_list();
+    my $arrayref  = $self->brands_list();
     my $hashref;
 
 
@@ -74,18 +78,17 @@ sub methods_hash {
     return $hashref;
 }
 
-
-sub get_method {
+sub get_cameras {
 
     my $self   = shift;
-    my $method = shift;
-    my $rsp = $self->execute_method('flickr.reflection.getMethodInfo',
-                                    {'method_name' => $method});
+    my $brand  = shift;
+    my $rsp    = $self->execute_method('flickr.cameras.getBrandModels',
+                                    {'brand' => $brand});
     my $hash = $rsp->as_hash();
+    my $AoH  = {};
     my $desc = {};
 
-    my $err;
-    my $arg;
+    my $cam;
 
     if ($rsp->success() == 1) {
 
@@ -94,25 +97,20 @@ sub get_method {
         $self->{flickr}->{status}->{error_code}     = 0;
         $self->{flickr}->{status}->{error_message} = '';
 
-        $desc->{$method} = $hash->{method};
+        $AoH = $hash->{cameras}->{camera};
 
-        foreach $err (@{$hash->{errors}->{error}}) {
+        foreach $cam (@{$AoH}) {
 
-            $desc->{$method}->{error}->{$err->{code}}->{message} = $err->{message};
-            $desc->{$method}->{error}->{$err->{code}}->{content} = $err->{content};
-
-        }
-
-        foreach $arg (@{$hash->{arguments}->{argument}}) {
-
-            $desc->{$method}->{argument}->{$arg->{name}}->{optional} = $arg->{optional};
-            $desc->{$method}->{argument}->{$arg->{name}}->{content}  = $arg->{content};
+            $desc->{$brand}->{$cam->{id}}->{name}    = $cam->{name};
+            $desc->{$brand}->{$cam->{id}}->{details} = $cam->{details};
+            $desc->{$brand}->{$cam->{id}}->{images}  = $cam->{images};
 
         }
+
     }
     else {
 
-        carp "Flickr::API::Reflection get method failed with error code: ",$rsp->error_code()," \n ",
+        carp "Flickr::API::Cameras get method failed with error code: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
 
         $self->{flickr}->{status}->{_rc}           = $rsp->rc();
@@ -162,49 +160,49 @@ __END__
 
 =head1 NAME
 
-Flickr::API::Reflection - An interface to the flickr.reflection.* methods.
+Flickr::API::Cameras - An interface to the flickr.cameras.* methods.
 
 =head1 SYNOPSIS
 
-  use Flickr::API::Reflection;
+  use Flickr::API::Cameras;
 
-  my $api = Flickr::API::Reflection->new({'consumer_key' => 'your_api_key'});
+  my $api = Flickr::API::Cameras->new({'consumer_key' => 'your_api_key'});
 
 or
 
-  my $api = Flickr::API::Reflection->import_storable_config($config_file);
+  my $api = Flickr::API::Cameras->import_storable_config($config_file);
 
-  my @methods = $api->methods_list();
-  my %methods = $api->methods_hash();
+  my @brands = $api->brands_list();
+  my %brands = $api->brands_hash();
 
-  my $method = $api->get_method('flickr.reflection.getMethodInfo');
+  my $cameras = $api->get_cameras($brands[1]);
 
 
 =head1 DESCRIPTION
 
-This object encapsulates the flickr reflection methods.
+This object encapsulates the flickr cameras methods.
 
-C<Flickr::API::Reflection> is a subclass of L<Flickr::API>, so you can access
-all of Flickr's reflection goodness while ignoring the nitty-gritty of setting
-up the conversation.
+C<Flickr::API::Cameras> is a subclass of L<Flickr::API>, so you can access
+Flickr's camera information easily.
 
 
 =head1 SUBROUTINES/METHODS
 
 =over
 
-=item C<methods_list>
+=item C<brands_list>
 
-Returns an array of Flickr's API methods.
+Returns an array of camera brands from Flickr's API.
 
-=item C<methods_hash>
+=item C<brands_hash>
 
-Returns a hash of Flickr's API methods.
+Returns a hash of camera brands from Flickr's API.
 
 
-=item C<get_method>
+=item C<get_cameras>
 
-Returns a hash reference to a description of the method from Flickr.
+Returns a hash reference to the descriptions of the cameras
+for a particular brand.
 
 =item C<error_code()>
 
