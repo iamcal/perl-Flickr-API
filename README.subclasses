@@ -1,0 +1,60 @@
+
+======================
+Flickr::API Subclasses
+======================
+
+The Flickr::API has a number of derived subclasses to aid in the
+use of the various sections of Flickr's API as described on
+https://www.flickr.com/services/api/
+
+
+A NOTE ON TESTING
+
+These subclasses rely on an existing OAuth configuration as is used by
+earlier tests. When you test them, you will need to have done the `make test'
+with MAKETEST_OAUTH_CFG=config_file specified.
+
+
+A NOTE ON AUTHENTICATION
+
+Flickr::API subclasses don't use Flickr's original (deprecated) 
+authentication. You will need to use OAuth. On the other hand, 
+some methods don't require authentication, just changing key to 
+consumer_key and secret to consumer_secret should work on these.
+
+
+Flickr::API::Cameras
+====================
+
+Flickr::API::Cameras is a subclass of Flickr::API with some additions
+for using Flickr's flickr.cameras  methods:
+
+brands_list - returns a list of camera brands as an array
+brands_hash - returns a list of camera brands as a hashref
+
+get_cameras - returns a hashref of camera models by the specified
+              brand as a hashref
+
+
+
+Flickr::API::Reflection
+=======================
+
+
+Flickr::API::Reflection is a subclass of Flickr::API with some (hopefully)
+useful additions for using Flickr's flickr.reflection  methods.
+
+
+methods_list - returns a list of Flickr's methods as an array
+methods_hash - returns a list of Flickr's methods as a hashref
+
+get_method - returns the description of a specified method as a
+             hashref
+
+
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2015 Louis B. Moore <lbmoore@cpan.org>
+License: Perl Artistic License 2.0

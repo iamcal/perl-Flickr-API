@@ -1,8 +1,14 @@
 Changes to Flickr::API
 
+1.18, 2015-08-12
+ * adding Flickr::API::Cameras
+ * adding t/08-cameras.t to test Cameras module
+ * replaced the STUB on Reflection.pm POD with the intended text
+ * Merge in Pull Request from rjbs
+
 1.17, 2015-08-04
  * adding Flickr::API::Reflection
- * adding t/07-reflection.t to Reflection module
+ * adding t/07-reflection.t to test Reflection module
  * Fixed typo per RT-106107
  * moved from @ISA to use parent in Request.pm and Response.pm
  * added call to and method _initialize to API.pm to support
