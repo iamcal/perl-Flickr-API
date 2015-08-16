@@ -2,9 +2,11 @@ use strict;
 use warnings;
 use Test::More;
 use Flickr::API::Cameras;
+use Flickr::Tools;
+use Flickr::API::People;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 13 );
+    plan( tests => 15 );
 }
 else {
     plan(skip_all => 'Cameras tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
@@ -13,6 +15,8 @@ else {
 my $config_file  = $ENV{MAKETEST_OAUTH_CFG};
 my $config_ref;
 my $api;
+my $papi;
+my $tapi;
 
 my $fileflag=0;
 if (-r $config_file) { $fileflag = 1; }
@@ -20,12 +24,17 @@ is($fileflag, 1, "Is the config file: $config_file, readable?");
 
 SKIP: {
 
-    skip "Skipping oauth cameras tests, oauth config isn't there or is not readable", 12
+    skip "Skipping oauth cameras tests, oauth config isn't there or is not readable", 14
         if $fileflag == 0;
 
-    $api = Flickr::API::Cameras->import_storable_config($config_file);
+    $api  = Flickr::API::Cameras->import_storable_config($config_file);
+    $papi = Flickr::API::People->import_storable_config($config_file);
+    $tapi = Flickr::Tools->new();
 
-    isa_ok($api, 'Flickr::API::Cameras');
+    isa_ok($api,  'Flickr::API::Cameras');
+    isa_ok($papi, 'Flickr::API::People');
+    isa_ok($tapi, 'Flickr::Tools');
+
     is($api->is_oauth, 1, 'Does this Flickr::API::Cameras object identify as OAuth');
     is($api->success,  1, 'Did cameras api initialize successful');
 
