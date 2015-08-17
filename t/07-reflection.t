@@ -4,7 +4,7 @@ use Test::More;
 use Flickr::API::Reflection;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 13 );
+    plan( tests => 14 );
 }
 else {
     plan(skip_all => 'Reflection tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
@@ -20,7 +20,7 @@ is($fileflag, 1, "Is the config file: $config_file, readable?");
 
 SKIP: {
 
-    skip "Skipping oauth reflection tests, oauth config isn't there or is not readable", 12
+    skip "Skipping oauth reflection tests, oauth config isn't there or is not readable", 13
         if $fileflag == 0;
 
     $api = Flickr::API::Reflection->import_storable_config($config_file);
@@ -63,6 +63,10 @@ SKIP: {
 
     is( $api->success, 0, 'Did we fail on a fake method as expected');
     is( $api->error_code, 1, 'Did we get an error code from Flickr');
+
+    $meth = $api->get_method('flickr.people.getLimits');
+
+    is( $api->success, 1, 'Was flickr.people.getLimits successful as expected');
 
     $meth = $api->get_method('flickr.reflection.getMethodInfo');
 

@@ -1,5 +1,13 @@
 Changes to Flickr::API
 
+1.19, 2015-08-16
+ * adding Flickr::API::People
+ * adding t/09-people.t to test People module
+ * fixed Reflection.pm for argument lists that is only 1 deep.
+ * added test to 07-reflection for method that does not have argument
+   array, but rather just a single argument 
+ 
+
 1.18, 2015-08-12
  * adding Flickr::API::Cameras
  * adding t/08-cameras.t to test Cameras module

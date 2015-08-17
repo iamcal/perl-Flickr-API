@@ -6,7 +6,7 @@ use Carp;
 use Flickr::Tools;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 
 sub _initialize {

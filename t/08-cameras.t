@@ -2,8 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Flickr::API::Cameras;
-use Flickr::Tools;
-use Flickr::API::People;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
     plan( tests => 15 );
@@ -27,10 +25,8 @@ SKIP: {
         if $fileflag == 0;
 
     $api  = Flickr::API::Cameras->import_storable_config($config_file);
-    $papi = Flickr::API::People->import_storable_config($config_file);
 
     isa_ok($api,  'Flickr::API::Cameras');
-    isa_ok($papi, 'Flickr::API::People');
 
     is($api->is_oauth, 1, 'Does this Flickr::API::Cameras object identify as OAuth');
     is($api->success,  1, 'Did cameras api initialize successful');
