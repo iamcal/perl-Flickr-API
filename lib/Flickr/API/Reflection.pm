@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 
 sub _initialize {
@@ -103,8 +103,18 @@ sub get_method {
 
         }
 
-        foreach $arg (@{$hash->{arguments}->{argument}}) {
+        if ( ref($hash->{arguments}->{argument}) eq 'ARRAY') {
 
+            foreach $arg (@{$hash->{arguments}->{argument}}) {
+
+                $desc->{$method}->{argument}->{$arg->{name}}->{optional} = $arg->{optional};
+                $desc->{$method}->{argument}->{$arg->{name}}->{content}  = $arg->{content};
+
+            }
+        }
+        else {
+
+            $arg = $hash->{arguments}->{argument};
             $desc->{$method}->{argument}->{$arg->{name}}->{optional} = $arg->{optional};
             $desc->{$method}->{argument}->{$arg->{name}}->{content}  = $arg->{content};
 
@@ -123,7 +133,7 @@ sub get_method {
     }
 
     return $desc;
-}
+} # get_method
 
 sub error_code {
 

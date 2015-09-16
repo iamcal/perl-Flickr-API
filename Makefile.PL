@@ -8,16 +8,16 @@ warn <<EOT;
 
 ############################___ NOTICE ___##############################
 #                                                                      #
-#  Some of the Authentication tests require information from you.      #
+#  Some of the api authentication and results tests require some       #
+#  information from you. Scripts script/flickr_make_stored_config.pl   #
+#  and script/flickr_make_test_values.pl are an easy way to assemble   #
+#  this information. Executing either script with the --help flag will #
+#  explain the arguments you need for these scripts.                   #
 #                                                                      #
-#  An easy way to assemble this information is to execute the script:  #
-#  script/flickr_make_stored_config.pl                                 #
-#                                                                      #
-#  The script requires --config_out=/the/path/to/where/to/write/config #
-#  and can optionally accept arguments for either the Flickr native    #
-#  authentication, or the OAuth authentication for Flickr. Minimally   #
-#  you need your key/consumer_key and secret/consumer_secret to build  #
-#  a usable Flickr/OAuth stored configuration.                         #
+#  The authentication tests use either the MAKETEST_OAUTH_CFG or the   #
+#  MAKETEST_FLICKR_CFG environment variables or both. The result tests #
+#  use the MAKETEST_VALUES environment variable. You can use any of    #
+#  environment variables with the others.                              #
 #                                                                      #
 # If you want to run these tests, answer `No' to the question below    #
 # and run the script or build your own config by hand. When you are    #
@@ -25,7 +25,9 @@ warn <<EOT;
 #    make test MAKETEST_OAUTH_CFG=/the/path/to/above/filename          #
 # or                                                                   #
 #    make test MAKETEST_FLICKR_CFG=/the/path/to/above/filename         #
-# or both.                                                             #
+# or                                                                   #
+#    make test MAKETEST_VALUES=/the/path/to/above/filename             #
+# or any combination of the above.                                     #
 #                                                                      #
 ############################___ NOTICE ___##############################
 
@@ -65,5 +67,6 @@ WriteMakefile(
         [
             'script/flickr_dump_stored_config.pl',
             'script/flickr_make_stored_config.pl',
+            'script/flickr_make_test_values.pl',
         ]
     );

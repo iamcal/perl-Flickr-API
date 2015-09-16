@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 23;
+use Test::More tests => 26;
 
 use Flickr::API;
 
@@ -41,9 +41,17 @@ SKIP: {
 $rsp = $api->execute_method('flickr.test.echo', {format => 'fake'});
 
 SKIP: {
-	skip "skipping error code check, since we couldn't reach the API", 1
+	skip "skipping error code check, since we couldn't reach the API", 4
 		if $rsp->rc() ne '200';
 	is($rsp->error_code(), 111, 'checking the error code for "format not found"');
+
+    my $status = {};
+    $rsp->_propagate_status($status);
+
+    is($status->{_rc},        $rsp->rc(),         'checking that http response code propagated');
+    is($status->{success},    $rsp->success(),    'checking that success flag propagated');
+    is($status->{error_code}, $rsp->error_code(), 'checking that error code propagated');
+
 }
 
 

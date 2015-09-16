@@ -43,8 +43,8 @@ SKIP: {
 
   SKIP: {
 
-		skip "Skip getting a frob, we already have " . $api->{flickr}->{frob} , 1
-		  if (defined($api->{flickr}->{frob}) and $api->{flickr}->{frob} =~ m/^[0-9a-f\-]+/i);
+		skip "Skip getting a frob, we already have " . $api->{fauth}->{frob} , 1
+		  if (defined($api->{fauth}->{frob}) and $api->{fauth}->{frob} =~ m/^[0-9a-f\-]+/i);
 
 		my $url = $api->request_auth_url('read');
 
@@ -77,11 +77,11 @@ SKIP: {
 
 	if ( defined($key) and
              $key ne 'frob' and
-             defined($api->{flickr}->{frob}) and
-             $api->{flickr}->{frob} =~ m/^[0-9a-f\-]+/i) {
+             defined($api->{fauth}->{frob}) and
+             $api->{fauth}->{frob} =~ m/^[0-9a-f\-]+/i) {
 
 		$key  = 'frob';
-		$frob = $api->{flickr}->{frob};
+		$frob = $api->{fauth}->{frob};
 
  	}
 
@@ -94,15 +94,15 @@ SKIP: {
 
 	  SKIP: {
 
-			skip "Skip getting a token, we already have " . $api->{flickr}->{token} , 3
-			  if defined($api->{flickr}->{token}) and $api->{flickr}->{token} =~ m/^[0-9a-f\-]+/i;
+			skip "Skip getting a token, we already have " . $api->{fauth}->{token} , 3
+			  if defined($api->{fauth}->{token}) and $api->{fauth}->{token} =~ m/^[0-9a-f\-]+/i;
 
 			my $rc = $api->flickr_access_token($frob);
 
 			is($rc, 'ok', 'Was flickr_access_token successful');
 
-			like($api->{flickr}->{token}, qr/^[0-9a-f\-]+/i, 'Is the token received token shaped');
-			like($api->{flickr}->{user}->{nsid}, qr/^[0-9]+\@[0-9a-z]/i, 'Did we get back an nsid');
+			like($api->{fauth}->{token}, qr/^[0-9a-f\-]+/i, 'Is the token received token shaped');
+			like($api->{fauth}->{user}->{nsid}, qr/^[0-9]+\@[0-9a-z]/i, 'Did we get back an nsid');
 
 		}
 
@@ -122,7 +122,7 @@ SKIP: {
 			isa_ok($api2, 'Flickr::API');
 			is($api2->{api_key}, $api->{api_key}, 'were we able to import our api key');
 			is($api2->{api_secret}, $api->{api_secret}, 'were we able to import our api secret');
-			is($api2->{flickr}->{token},$api->{flickr}->{token}, 'What about the token');
+			is($api2->{fauth}->{token},$api->{fauth}->{token}, 'What about the token');
 
 		}
 	}

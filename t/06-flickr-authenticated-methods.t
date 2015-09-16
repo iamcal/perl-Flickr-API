@@ -32,10 +32,10 @@ SKIP: {
 	isa_ok($api, 'Flickr::API');
 	is($api->is_oauth, 0, 'Does Flickr::API object identify as Flickr');
 
-	like($api->{flickr}->{key},  qr/[0-9a-f]+/i, "Did we get an api key from $config_file");
-	like($api->{flickr}->{secret}, qr/[0-9a-f]+/i, "Did we get an api secret from $config_file");
+	like($api->{fauth}->{key},  qr/[0-9a-f]+/i, "Did we get an api key from $config_file");
+	like($api->{fauth}->{secret}, qr/[0-9a-f]+/i, "Did we get an api secret from $config_file");
 
-	if (defined($api->{flickr}->{token}) and $api->{flickr}->{token} =~ m/^[0-9]+-[0-9a-f]+$/i) {
+	if (defined($api->{fauth}->{token}) and $api->{fauth}->{token} =~ m/^[0-9]+-[0-9a-f]+$/i) {
 
 		$proceed = 1;
 
@@ -46,7 +46,7 @@ SKIP: {
 			skip "Skipping authentication tests, flickr access token missing or seems wrong", 10
 			  if $proceed == 0;
 
-			my $rsp = $api->execute_method('flickr.auth.checkToken', {auth_token => $api->{flickr}->{token}});
+			my $rsp = $api->execute_method('flickr.auth.checkToken', {auth_token => $api->{fauth}->{token}});
 
 			is($rsp->success(), 1, "Did flickr.auth.checkToken complete sucessfully");
 			my $ref = $rsp->as_hash();
@@ -57,7 +57,7 @@ SKIP: {
 			isnt($ref->{auth}->{user}->{username}, undef, "Did flickr.auth.checkToken return username");
 
 
-			$rsp = $api->execute_method('flickr.test.login', {auth_token => $api->{flickr}->{token}});
+			$rsp = $api->execute_method('flickr.test.login', {auth_token => $api->{fauth}->{token}});
 			$ref = $rsp->as_hash();
 
 			is($ref->{stat}, 'ok', "Did flickr.test.login complete sucessfully");
@@ -66,7 +66,7 @@ SKIP: {
 			isnt($ref->{user}->{username}, undef, "Did flickr.test.login return username");
 
 
-			$rsp = $api->execute_method('flickr.prefs.getPrivacy', {auth_token => $api->{flickr}->{token}});
+			$rsp = $api->execute_method('flickr.prefs.getPrivacy', {auth_token => $api->{fauth}->{token}});
 			$ref = $rsp->as_hash();
 
 			is($ref->{stat}, 'ok', "Did flickr.prefs.getPrivacy complete sucessfully");

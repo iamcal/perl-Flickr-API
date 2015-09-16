@@ -6,7 +6,7 @@ use HTTP::Response;
 
 use parent qw(HTTP::Response);
 
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 sub new {
     my $class = shift;
@@ -100,6 +100,20 @@ sub rc {
 
 }
 
+sub _propagate_status {
+
+    my $self = shift;
+    my $stat = shift;
+
+    $stat->{_rc}           = $self->{_rc};           # http response _rc
+    $stat->{success}       = $self->{success};       # set by Flickr::API::Response
+    $stat->{error_code}    = $self->{error_code};    # Returned by Flickr or set in API
+    $stat->{error_message} = $self->error_message(); # use method since it fixes text
+
+    return;
+
+}
+
 1;
 
 __END__
@@ -131,6 +145,7 @@ keys:
   {
     'success' => 1,
     'tree' => XML::Parser::Lite::Tree,
+    'hash' => Flickr response as a hash,
     'error_code' => 0,
     'error_message' => '',
   }
@@ -175,6 +190,12 @@ Returns the success or lack thereof from Flickr
 =item C<rc()>
 
 Returns the Flickr http status code
+
+
+=item C<_propagate_status(\%hash)>
+
+Returns the entire response status block as a hashref.
+
 
 =back
 

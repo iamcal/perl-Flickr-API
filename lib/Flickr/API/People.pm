@@ -3,20 +3,73 @@ package Flickr::API::People;
 use strict;
 use warnings;
 use Carp;
-use Flickr::Tools;
+
 
 use parent qw( Flickr::API );
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 
 sub _initialize {
 
     my $self=shift;
+    my $check;
     $self->{flickr}->{status}->{_rc} = 0;
     $self->{flickr}->{status}->{success} = 1;  # initialize as successful
     $self->{flickr}->{status}->{error_code} = 0;
     $self->{flickr}->{status}->{error_message} = '';
+
+    $self->{flickr}->{token}->{perms} = 'none';
+
+    if (defined($self->{oauth}->{token})) {
+
+        my $rsp = $self->execute_method('flickr.auth.oauth.checkToken');
+
+        if (!$rsp->success()) {
+
+            $self->{flickr}->{status}->{_rc} = $rsp->rc();
+            $self->{flickr}->{status}->{success} = 0;
+            $self->{flickr}->{status}->{error_code} = $rsp->error_code();
+            $self->{flickr}->{status}->{error_message} = $rsp->error_message();
+
+            carp "\nUnable to validate token. Error: ",
+                $self->{flickr}->{status}->{error_code}," - \"",
+                $self->{flickr}->{status}->{error_message},"\" \n";
+
+        }
+        else {
+
+            $check = $rsp->as_hash();
+            $self->{flickr}->{token} = $check->{oauth};
+
+        }
+
+    }
+
     return;
+
+}
+
+sub findByEmail {
+
+    my $self = shift;
+    my $args = shift;
+
+    return;
+}
+
+sub findByUsername {
+
+    my $self = shift;
+    my $args = shift;
+
+    return;
+}
+
+
+sub perms {
+
+    my $self=shift;
+    return $self->{flickr}->{token}->{perms};
 
 }
 
