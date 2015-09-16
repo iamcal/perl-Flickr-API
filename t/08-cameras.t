@@ -4,7 +4,7 @@ use Test::More;
 use Flickr::API::Cameras;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 15 );
+    plan( tests => 13 );
 }
 else {
     plan(skip_all => 'Cameras tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');

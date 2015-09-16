@@ -112,10 +112,10 @@ sub new {
         $self->{auth_uri}    = $options->{auth_uri} || 'https://api.flickr.com/services/auth/';
         $self->{unicode}     = $options->{unicode}  || 0;
 
-        $self->{flickr}->{frob}    = $options->{frob};
-        $self->{flickr}->{key}     = $options->{key};
-        $self->{flickr}->{secret}  = $options->{secret};
-        $self->{flickr}->{token}   = $options->{token};
+        $self->{fauth}->{frob}    = $options->{frob};
+        $self->{fauth}->{key}     = $options->{key};
+        $self->{fauth}->{secret}  = $options->{secret};
+        $self->{fauth}->{token}   = $options->{token};
 
         carp "You must pass an API key or a Consumer key to the constructor" unless defined $self->{api_key};
 
@@ -309,7 +309,7 @@ sub export_config {
         }
     }
     else {
-        return %{$self->{flickr}};
+        return %{$self->{fauth}};
     }
 
 }
@@ -539,12 +539,12 @@ sub flickr_access_token {
     my $rsp = $self->execute_method('flickr.auth.getToken', {api_key => $self->{api_key}, frob => $frob });
     my $response_ref = $rsp->as_hash();
 
-    $self->{flickr}->{frob} = $frob;
+    $self->{fauth}->{frob} = $frob;
 
     $self->{token} = $response_ref->{auth}->{token};
-    $self->{flickr}->{token} = $response_ref->{auth}->{token};
+    $self->{fauth}->{token} = $response_ref->{auth}->{token};
 
-    $self->{flickr}->{user}  = $response_ref->{auth}->{user};
+    $self->{fauth}->{user}  = $response_ref->{auth}->{user};
 
     return $response_ref->{stat};
 
@@ -618,6 +618,23 @@ sub _make_nonce {
 
     return md5_hex(rand);
 
+}
+sub _export_api {
+    my $self = shift;
+    my $api  = {};
+
+    $api->{oauth}       = $self->{oauth};
+    $api->{fauth}       = $self->{fauth};
+    $api->{flickr}      = $self->{flickr};
+
+    $api->{api_type}    =  $self->{api_type};
+    $api->{api_key}     =  $self->{api_key};
+    $api->{api_secret}  =  $self->{api_secret};
+    $api->{rest_uri}    =  $self->{rest_uri};
+    $api->{unicode}     =  $self->{unicode};
+    $api->{auth_uri}    =  $self->{auth_uri};
+
+    return $api;
 }
 
 

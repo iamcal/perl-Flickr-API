@@ -19,7 +19,7 @@ if (-r $config_file) { $fileflag = 1; }
 is($fileflag, 1, "Is the config file: $config_file, readable?");
 SKIP: {
 
-    skip "Skipping oauth cameras tests, oauth config isn't there or is not readable", 3
+    skip "Skipping people tests, oauth config isn't there or is not readable", 3
         if $fileflag == 0;
 
     $api = Flickr::API::People->import_storable_config($config_file);
@@ -41,4 +41,4 @@ __END__
 
 # Local Variables:
 # mode: Perl
-# End
+# End:

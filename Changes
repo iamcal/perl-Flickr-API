@@ -1,12 +1,16 @@
 Changes to Flickr::API
 
-1.19, 2015-08-16
+1.19, 2015-09-16
  * adding Flickr::API::People
  * adding t/09-people.t to test People module
  * fixed Reflection.pm for argument lists that is only 1 deep.
  * added test to 07-reflection for method that does not have argument
    array, but rather just a single argument 
- 
+ * moved flickr deprecated authentication from $api->{flickr} to
+  $api->{fauth} to make better use of $api->{flickr} for subclassing.
+ * added a number of status reporting methods to API.pm
+ * add _propagate_status to Response.pm
+ * add script/flickr_make_test_values.pl for more in-depth testing
 
 1.18, 2015-08-12
  * adding Flickr::API::Cameras
