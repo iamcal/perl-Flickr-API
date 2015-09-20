@@ -11,6 +11,8 @@ sub _initialize {
 
     my $self = shift;
     $self->_set_status(1,'API::Cameras initialized');
+    return;
+
 }
 
 sub brands_list {
@@ -161,22 +163,6 @@ Returns a hash of camera brands from Flickr's API.
 
 Returns a hash reference to the descriptions of the cameras
 for a particular brand.
-
-=item C<error_code()>
-
-Returns the Flickr Error Code, if any
-
-=item C<error_message()>
-
-Returns the Flickr Error Message, if any
-
-=item C<success()>
-
-Returns the success or lack thereof from Flickr
-
-=item C<rc()>
-
-Returns the Flickr http status code
 
 =back
 
