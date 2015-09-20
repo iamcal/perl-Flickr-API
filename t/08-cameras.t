@@ -4,7 +4,7 @@ use Test::More;
 use Flickr::API::Cameras;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 13 );
+    plan( tests => 12 );
 }
 else {
     plan(skip_all => 'Cameras tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
@@ -29,14 +29,14 @@ SKIP: {
     isa_ok($api,  'Flickr::API::Cameras');
 
     is($api->is_oauth, 1, 'Does this Flickr::API::Cameras object identify as OAuth');
-    is($api->success,  1, 'Did cameras api initialize successful');
+    is($api->api_success,  1, 'Did cameras api initialize successful');
 
     my $brands = $api->brands_list();
 
   SKIP: {
 
         skip "Skipping brands_list tests, not able to reach the API or received error", 3,
-            if !$api->success;
+            if !$api->api_success;
 
         like($brands->[0], qr/^[a-zA-Z]+$/, "Does the list appear to have a brand");
 
@@ -52,7 +52,7 @@ SKIP: {
   SKIP: {
 
         skip "Skipping brands_hash tests, not able to reach the API or received error", 2,
-            if !$api->success;
+            if !$api->api_success;
 
         is( $hashcameras->{'Nikon'}, 1,
             'Was Nikon in the cameras_hash');
@@ -63,12 +63,11 @@ SKIP: {
 
     my $cameras = $api->get_cameras('You_call_THIS_a_camera_Brand');
 
-    is( $api->success, 0, 'Did we fail on a fake brand as expected');
-    is( $api->error_code, 1, 'Did we get an error code from Flickr');
+    is( $api->api_success, 0, 'Did we fail on a fake brand as expected');
 
     $cameras = $api->get_cameras('Leica');
 
-    is( $api->success, 1, 'Were we successful as expected');
+    is( $api->api_success, 1, 'Were we successful as expected');
 
     my @cam_ids = keys(%{$cameras->{'Leica'}});
 
