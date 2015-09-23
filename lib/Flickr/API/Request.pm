@@ -9,7 +9,7 @@ use Encode qw(encode_utf8);
 
 use parent qw(HTTP::Request);
 
-our $VERSION = '1.19';
+our $VERSION = '1.20';
 
 sub new {
     my $class = shift;

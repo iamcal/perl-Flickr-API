@@ -6,7 +6,7 @@ use HTTP::Response;
 
 use parent qw(HTTP::Response);
 
-our $VERSION = '1.19';
+our $VERSION = '1.20';
 
 sub new {
     my $class = shift;
