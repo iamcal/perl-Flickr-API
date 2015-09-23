@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 29;
+use Test::More tests => 31;
 use Test::Script;
 use File::Temp ();
 
@@ -135,6 +135,7 @@ is_deeply($api2->{oauth}, $api->{oauth}, "Did import_storable_config get back th
 
 script_compiles('script/flickr_make_stored_config.pl','Does flickr_make_stored_config.pl compile');
 script_compiles('script/flickr_dump_stored_config.pl','Does flickr_dump_stored_config.pl compile');
+script_compiles('script/flickr_make_test_values.pl','Does flickr_make_test_values.pl compile');
 
 my @runtime = ('script/flickr_dump_stored_config.pl', '--config_in='.$fname);
 
@@ -145,6 +146,11 @@ script_runs(\@runtime, "Did flickr_dump_stored_config.pl run");
 #
 # check private method
 #
+
+my $apiex = $api->_export_api();
+
+is($apiex->{'oauth'}->{'consumer_key'}, $key,
+   'Did _export_api return the consumer_key when asked');
 
 
 my $nonce = $api->_make_nonce();
