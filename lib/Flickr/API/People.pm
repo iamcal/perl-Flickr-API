@@ -51,7 +51,7 @@ sub findByEmail {
     if ($rsp->success == 1) {
 
         my $eresult = $rsp->as_hash();
-        $self->_set_status(1,"flickr.people.findByEmail successfullt found " . $email);
+        $self->_set_status(1,"flickr.people.findByEmail successfully found " . $email);
         $self->{flickr}->{user} = $eresult->{user};
 
     }
@@ -107,6 +107,13 @@ sub username {
 
     my $self=shift;
     return $self->{flickr}->{user}->{username};
+
+}
+
+sub user {
+
+    my $self=shift;
+    return $self->{flickr}->{user};
 
 }
 
