@@ -1,9 +1,20 @@
 Changes to Flickr::API
 
+1.20, 2015-10-xx
+ * moved Cameras.pm, Reflection.pm and People.pm  to new 
+   status reporting.
+ * Added Person.pm for the flickr.people methods other than finds
+ * Added tests for Person.pm
+ * Updated the MANIFEST
+ * Add tests to 02-oauth_api.t for new script and for private method
+ * Added Types.pm to define types for Moo types
+ * Consider splitting the Tools back into a separate distribution 
+   so Moo isn't required for the base API.
+
 1.19, 2015-09-16
- * adding Flickr::API::People
+ * adding Flickr::API::People for the flickr.people methods that find
  * adding t/09-people.t to test People module
- * fixed Reflection.pm for argument lists that is only 1 deep.
+ * fixed Reflection.pm for argument lists that are only 1 deep.
  * added test to 07-reflection for method that does not have argument
    array, but rather just a single argument 
  * moved flickr deprecated authentication from $api->{flickr} to

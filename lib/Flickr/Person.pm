@@ -1,219 +1,121 @@
 package Flickr::Person;
 
-use strict;
-use warnings;
+use Flickr::Types qw( Personsearch Personuser);
 use Carp;
-use Flickr::API::People;
+use Moo;
+use namespace::clean;
 
-sub new {
-    my $class = shift;
-    my $args  = shift;
 
-    my $papi;
-    my $user = {};
+has api => (
+    is  => 'ro',
+    isa => sub { confess "$_[0] is not a Flickr::API::People",
+                     if (ref($_[0]) ne 'Flickr::API::People');
+             },
+    required => 1,
 
-    my $person={};
+);
 
-    $person->{status}->{success} = 0;
-    $person->{status}->{message}  = 'Not Instantiated';
+has searchkey => (
+    is   => 'rw',
+    isa  => Personsearch,
+    required => 1,
+);
 
-    bless $person, $class;
+has user => (
+    is => 'rwp',
+    isa => Personuser,
+);
 
-    if ($args->{api} && ref($args->{api}) eq 'Flickr::API::People') {
+has success => (
+    is      => 'rwp',
+    isa     =>  sub { $_[0] != 0 ? 1 : 0; },
+    default =>  0,
+);
 
-        $papi = $args->{api};
+
+
+sub BUILD {
+    my ($self) = @_;
+
+    $self->search;
+
+    return;
+}
+
+sub search {
+    my $self = shift;
+    my $key = $self->searchkey;
+    my $api = $self->api;
+
+    if ( defined ($key->{email})) {
+
+        $api->findByEmail($key->{email});
 
     }
-    elsif ($args->{configfile}) {
+    elsif (defined ($key->{username})) {
 
-        $papi = Flickr::API::People->import_storable_config($args->{configfile});
+        $api->findByUsername($key->{username});
 
     }
     else {
 
-        carp "\nFlickr::Person->new() needs either a Flickr::API::People object\n" .
-            "   or a storable config file\n";
-
-        $person->_set_status(0,'No Flickr::API::People or storable config');
-
-
+        $self->_set_success(0);
+        confess "Person->search was handed a non-person key to search for. Understandably upset";
     }
 
-    if ($papi->api_success() == 1) {
+    if (($api->api_success) == 0 ) {
 
-        if ($args->{findByEmail}) {
+        carp 'Person->search failed. Flickr::API::People reports "',$api->api_message,'"';
+        $self->_set_success(0);
 
-            $papi->findByEmail($args->{findByEmail});
+    } else {
 
-            if ($papi->api_success() == 1) {
+        $self->_set_success(1);
+        $self->_set_user($api->user());
+    }
+}
 
-                $person->_set_status(1,'Found user ' .
-                                         $papi->username() .
-                                         ' using email ' .
-                                         $args->{findByEmail} );
 
-                $person->{user} = $papi->user();
-                $person->{api}  = $papi;
-            }
-            else {
+sub getGroups {
 
-                $person->_set_status(0,'findByEmail failed: ' . $papi->error_message());
+    my ($self,$args) = @_;
 
-            }
-        }
-        elsif  ($args->{findByUsername}) {
+    my $api  = $self->api;
+    my $call = {};
+    my $groups = {};
 
-            $papi->findByUsername($args->{findByUsername});
+    $call->{user_id} = $api->nsid;
 
-            if ($papi->api_success() == 1) {
+    if (defined($args->{user_id})) { $call->{user_id} = $args->{user_id}; }
+    if (defined($args->{extras}))  { $call->{extras}  = $args->{extras}; }
 
-                $person->_set_status(1,'Found user ' .
-                                         $papi->username() .
-                                         ' using username ' .
-                                         $args->{findByUsername} );
+    if ($api->perms() =~ /^(read|write|delete)$/) {
 
-                $person->{user} = $papi->user();
-                $person->{api}  = $papi;
+        my $rsp = $api->execute_method('flickr.people.getGroups',$call);
 
-            }
-            else {
+        if ($rsp->success == 1) {
 
-                $person->_set_status(0,'findByUsername failed: ' . $papi->error_message());
-
-            }
+            $groups = $rsp->as_hash();
+            $self->_set_success(1);
 
         }
         else {
 
-            carp "\nFlickr::Person->new() needs either an email address or username\n";
-            $person->_set_status(0,'Flickr::Person->new() needs either an email address or username');
+            carp 'Person->getGroups failed with ',$rsp->message;
+            $self->_set_success(0);
 
         }
-    } # api successful
+    }
     else {
 
-        carp "\nFlickr::Person->new() unsuccessful with Flickr::API::People ";
-        $person->_set_status(0,'Flickr::Person->new() unsuccessful with Flickr::API::People');
-
-    } # else api successful
-
-    return $person;
-
-} #new
-
-sub success {
-
-    my $self = shift;
-    return $self->{status}->{success};
-
-}
-sub message {
-
-    my $self = shift;
-    return $self->{status}->{message};
-
-}
-
-sub getGroups {
-
-    my $self = shift;
-    my $args = shift;
-    if ($self->perms() eq 'none') {
+        carp 'Person->getGroups failed. Method needs read permission and api has ',$api->perms();
+        $self->_set_success(0);
 
     }
-    return;
-}
 
-sub getInfo {
-
-    my $self = shift;
-    my $args = shift;
-
-    return;
-}
-
-sub getLimits {
-
-    my $self = shift;
-    my $args = shift;
-    if ($self->perms() eq 'none') {
-
-    }
-    return;
-}
-
-sub getPhotos {
-
-    my $self = shift;
-    my $args = shift;
-
-    return;
-}
-
-sub getPhotosOf {
-
-    my $self = shift;
-    my $args = shift;
-
-    return;
-}
-
-
-sub getPublicGroups {
-
-    my $self = shift;
-    my $args = shift;
-    if ($self->perms() eq 'none') {
-
-    }
-    return;
-}
-
-
-sub getPublicPhotos {
-
-    my $self = shift;
-    my $args = shift;
-    if ($self->perms() eq 'none') {
-
-    }
-    return;
-}
-
-
-sub getUploadStatus {
-
-    my $self = shift;
-    my $args = shift;
-    if ($self->perms() eq 'none') {
-
-    }
-    return;
-}
-
-sub _set_status {
-
-    my $self  =  shift;
-    my $good  =  shift;
-    my $msg   =  shift;
-
-    if ($good != 0) { $good = 1; }
-
-    $self->{status}->{success} = $good;
-    $self->{status}->{message} = $msg;
-
-    return;
-}
-
-sub _person_only {
-
-    my $self = shift;
-    my $copy = $self;
-    delete $copy->{api};
-    return $copy;
+    return $groups;
 
 }
-
 
 1;
 
