@@ -6,7 +6,6 @@ examples/flickr_method_test_echo.pl
 examples/flickr_method_test_login.pl
 examples/flickr_oauth_authentication.pl
 lib/Flickr/API.pm
-lib/Flickr/Person.pm
 lib/Flickr/API/Cameras.pm
 lib/Flickr/API/People.pm
 lib/Flickr/API/Request.pm
@@ -32,5 +31,3 @@ t/06-flickr-authenticated-methods.t
 t/06-oauth-authenticated-methods.t
 t/07-reflection.t
 t/08-cameras.t
-t/09-people.t
-t/10-person.t
