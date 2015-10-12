@@ -1,11 +1,12 @@
 Changes to Flickr::API
 
-1.22, 2015-10-06
+1.25, 2015-10-12
  * Realizing that there is benefit to keeping Flickr::API as close to
    perl core as practical and letting Flickr::Tools use Moo and more
    abstraction, stopped moving all of Flickr::Tools into Flickr::API.
 *  Moved Person.pm and Types.pm to Flickr::Tools.
-*  Bumped version by two to keep it ahead of Tools.
+*  Bumped version by five to keep it ahead of Tools, at least for
+   the time being.
 
 1.20, 2015-10-05
  * moved Cameras.pm, Reflection.pm and People.pm  to new 
