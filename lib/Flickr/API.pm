@@ -16,7 +16,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.19';
+our $VERSION = '1.25';
 
 
 
@@ -72,6 +72,7 @@ sub new {
         else {
 
             carp "OAuth calls must have at least a consumer_key and a consumer_secret";
+            $self->_set_status(0,"OAuth call without consumer_secret");
 
         }
 
@@ -128,6 +129,7 @@ sub new {
     };
 
     bless $self, $class;
+    $self->_clear_status();
     $self->_initialize();
     return $self;
 }
@@ -578,6 +580,18 @@ sub get_oauth_request_type {
     }
 }
 
+sub api_success {
+    my $self = shift;
+
+    return $self->{flickr}->{status}->{api_success};
+
+}
+sub api_message {
+    my $self = shift;
+
+    return $self->{flickr}->{status}->{api_message};
+}
+
 
 #
 # Private methods
@@ -638,7 +652,50 @@ sub _export_api {
 }
 
 
-sub _initialize {}
+sub _initialize {
+
+    my $self = shift;
+    $self->_set_status(1,'Base API initialized');
+
+}
+
+sub _full_status {
+
+    my $self = shift;
+    my $stat = $self->{flickr}->{status};
+    return;
+}
+
+sub _clear_status {
+
+    my $self = shift;
+
+    # the API status
+    $self->_set_status(1,'');
+    # the propagated response status
+    $self->{flickr}->{status}->{_rc} = 0;
+    $self->{flickr}->{status}->{success} = 1;         # initialize as successful
+    $self->{flickr}->{status}->{error_code} = 0;
+    $self->{flickr}->{status}->{error_message} = '';
+
+    return;
+
+}
+
+sub _set_status {
+
+    my $self  =  shift;
+    my $good  =  shift;
+    my $msg   =  shift;
+
+    if ($good != 0) { $good = 1; }
+
+    $self->{flickr}->{status}->{api_success} = $good;
+    $self->{flickr}->{status}->{api_message} = $msg;
+
+    return;
+}
+
 
 
 1;

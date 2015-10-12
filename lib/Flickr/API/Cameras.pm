@@ -5,20 +5,15 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.19';
-
+our $VERSION = '1.25';
 
 sub _initialize {
 
-    my $self=shift;
-    $self->{flickr}->{status}->{_rc} = 0;
-    $self->{flickr}->{status}->{success} = 1;  # initialize as successful
-    $self->{flickr}->{status}->{error_code} = 0;
-    $self->{flickr}->{status}->{error_message} = '';
+    my $self = shift;
+    $self->_set_status(1,'API::Cameras initialized');
     return;
 
 }
-
 
 sub brands_list {
 
@@ -26,12 +21,9 @@ sub brands_list {
     my $rsp     = $self->execute_method('flickr.cameras.getBrands');
     my $listref = ();
 
-    if ($rsp->success() == 1) {
+    $rsp->_propagate_status($self->{flickr}->{status});
 
-        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
-        $self->{flickr}->{status}->{success}        = 1;
-        $self->{flickr}->{status}->{error_code}     = 0;
-        $self->{flickr}->{status}->{error_message} = '';
+    if ($rsp->success() == 1) {
 
         foreach my $cam (@{$rsp->as_hash()->{brands}->{brand}}) {
 
@@ -39,16 +31,15 @@ sub brands_list {
 
         }
 
+        $self->_set_status(1,"flickr.camera.getBrands returned " . $#{$listref}  . " brands.");
+
     }
     else {
 
 
-        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
-        $self->{flickr}->{status}->{success}       = 0;
-        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
-        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
+        $self->_set_status(0,"Flickr::API::Cameras Methods list/hash failed with response error");
 
-        carp "Flickr::API::Cameras Methods list/hash failed with error code: ",$rsp->error_code()," \n ",
+        carp "Flickr::API::Cameras Methods list/hash failed with response error: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
 
     }
@@ -90,12 +81,9 @@ sub get_cameras {
 
     my $cam;
 
-    if ($rsp->success() == 1) {
+    $rsp->_propagate_status($self->{flickr}->{status});
 
-        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
-        $self->{flickr}->{status}->{success}        = 1;
-        $self->{flickr}->{status}->{error_code}     = 0;
-        $self->{flickr}->{status}->{error_message} = '';
+    if ($rsp->success() == 1) {
 
         $AoH = $hash->{cameras}->{camera};
 
@@ -107,51 +95,23 @@ sub get_cameras {
 
         }
 
+        $self->_set_status(1,"flickr.camera.getBrandModels returned " . $#{$AoH}  . " models.");
+
     }
     else {
 
-        carp "Flickr::API::Cameras get method failed with error code: ",$rsp->error_code()," \n ",
+
+        $self->_set_status(0,"Flickr::API::Cameras get_cameras failed with response error");
+
+        carp "Flickr::API::Cameras get_cameras method failed with error code: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
 
-        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
-        $self->{flickr}->{status}->{success}       = 0;
-        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
-        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
 
     }
 
     return $desc;
 }
 
-sub error_code {
-
-    my $self = shift;
-    return $self->{flickr}->{status}->{error_code};
-
-}
-
-sub error_message {
-
-    my $self = shift;
-    my $text = $self->{flickr}->{status}->{error_message};
-    $text =~ s/\&quot;/\"/g;
-    return $text;
-
-}
-
-sub rc {
-
-    my $self = shift;
-    return $self->{flickr}->{status}->{_rc};
-
-}
-
-sub success {
-
-    my $self = shift;
-    return $self->{flickr}->{status}->{success};
-
-}
 
 1;
 
@@ -203,22 +163,6 @@ Returns a hash of camera brands from Flickr's API.
 
 Returns a hash reference to the descriptions of the cameras
 for a particular brand.
-
-=item C<error_code()>
-
-Returns the Flickr Error Code, if any
-
-=item C<error_message()>
-
-Returns the Flickr Error Message, if any
-
-=item C<success()>
-
-Returns the success or lack thereof from Flickr
-
-=item C<rc()>
-
-Returns the Flickr http status code
 
 =back
 

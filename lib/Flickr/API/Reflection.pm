@@ -5,16 +5,13 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.19';
+our $VERSION = '1.25';
 
 
 sub _initialize {
 
-    my $self=shift;
-    $self->{flickr}->{status}->{_rc} = 0;
-    $self->{flickr}->{status}->{success} = 1;  # initialize as successful
-    $self->{flickr}->{status}->{error_code} = 0;
-    $self->{flickr}->{status}->{error_message} = '';
+    my $self = shift;
+    $self->_set_status(1,'API::Reflection initialized');
     return;
 
 }
@@ -24,31 +21,25 @@ sub methods_list {
 
     my $self    = shift;
     my $rsp = $self->execute_method('flickr.reflection.getMethods');
+    $rsp->_propagate_status($self->{flickr}->{status});
+    my $listref = ();
 
     if ($rsp->success() == 1) {
 
-        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
-        $self->{flickr}->{status}->{success}        = 1;
-        $self->{flickr}->{status}->{error_code}     = 0;
-        $self->{flickr}->{status}->{error_message} = '';
-
-        return $rsp->as_hash()->{methods}->{method};
+        $listref = $rsp->as_hash()->{methods}->{method};
+        $self->_set_status(1,"flickr.reflection.getMethods returned " . $#{$listref}  . " methods.")
 
     }
     else {
 
-
-        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
-        $self->{flickr}->{status}->{success}       = 0;
-        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
-        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
-
+        $self->_set_status(0,"Flickr::API::Reflection Methods list/hash failed with response error");
         carp "Flickr::API::Reflection Methods list/hash failed with error code: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
 
         my $listref = ();
-        return $listref;
     }
+
+    return $listref;
 }
 
 
@@ -84,15 +75,14 @@ sub get_method {
     my $hash = $rsp->as_hash();
     my $desc = {};
 
+    $rsp->_propagate_status($self->{flickr}->{status});
+
     my $err;
     my $arg;
 
     if ($rsp->success() == 1) {
 
-        $self->{flickr}->{status}->{_rc}            = $rsp->rc();
-        $self->{flickr}->{status}->{success}        = 1;
-        $self->{flickr}->{status}->{error_code}     = 0;
-        $self->{flickr}->{status}->{error_message} = '';
+        $self->_set_status(1,"flickr.reflection.getMethodInfo returned was successful");
 
         $desc->{$method} = $hash->{method};
 
@@ -122,48 +112,16 @@ sub get_method {
     }
     else {
 
+        $self->_set_status(0,"Flickr::API::Reflection get_method failed with response error");
         carp "Flickr::API::Reflection get method failed with error code: ",$rsp->error_code()," \n ",
             $rsp->error_message(),"\n";
-
-        $self->{flickr}->{status}->{_rc}           = $rsp->rc();
-        $self->{flickr}->{status}->{success}       = 0;
-        $self->{flickr}->{status}->{error_code}    = $rsp->error_code();
-        $self->{flickr}->{status}->{error_message} = $rsp->error_message();
 
     }
 
     return $desc;
 } # get_method
 
-sub error_code {
 
-    my $self = shift;
-    return $self->{flickr}->{status}->{error_code};
-
-}
-
-sub error_message {
-
-    my $self = shift;
-    my $text = $self->{flickr}->{status}->{error_message};
-    $text =~ s/\&quot;/\"/g;
-    return $text;
-
-}
-
-sub rc {
-
-    my $self = shift;
-    return $self->{flickr}->{status}->{_rc};
-
-}
-
-sub success {
-
-    my $self = shift;
-    return $self->{flickr}->{status}->{success};
-
-}
 
 1;
 
@@ -216,21 +174,6 @@ Returns a hash of Flickr's API methods.
 
 Returns a hash reference to a description of the method from Flickr.
 
-=item C<error_code()>
-
-Returns the Flickr Error Code, if any
-
-=item C<error_message()>
-
-Returns the Flickr Error Message, if any
-
-=item C<success()>
-
-Returns the success or lack thereof from Flickr
-
-=item C<rc()>
-
-Returns the Flickr http status code
 
 =back
 

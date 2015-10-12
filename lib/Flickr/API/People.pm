@@ -6,44 +6,35 @@ use Carp;
 
 
 use parent qw( Flickr::API );
-our $VERSION = '1.19';
+our $VERSION = '1.25';
 
 
 sub _initialize {
 
     my $self=shift;
     my $check;
-    $self->{flickr}->{status}->{_rc} = 0;
-    $self->{flickr}->{status}->{success} = 1;  # initialize as successful
-    $self->{flickr}->{status}->{error_code} = 0;
-    $self->{flickr}->{status}->{error_message} = '';
 
-    $self->{flickr}->{token}->{perms} = 'none';
-
-    if (defined($self->{oauth}->{token})) {
 
         my $rsp = $self->execute_method('flickr.auth.oauth.checkToken');
 
         if (!$rsp->success()) {
 
-            $self->{flickr}->{status}->{_rc} = $rsp->rc();
-            $self->{flickr}->{status}->{success} = 0;
-            $self->{flickr}->{status}->{error_code} = $rsp->error_code();
-            $self->{flickr}->{status}->{error_message} = $rsp->error_message();
+            $rsp->_propagate_status($self->{flickr}->{status});
 
-            carp "\nUnable to validate token. Error: ",
+            carp "\nUnable to validate token. Flickr error: ",
                 $self->{flickr}->{status}->{error_code}," - \"",
                 $self->{flickr}->{status}->{error_message},"\" \n";
+
+            $self->_set_status(0,"Unable to validate token, Flickr API call not successful.");
 
         }
         else {
 
             $check = $rsp->as_hash();
             $self->{flickr}->{token} = $check->{oauth};
+            $self->_set_status(1,"Token validated.");
 
         }
-
-    }
 
     return;
 
@@ -51,8 +42,24 @@ sub _initialize {
 
 sub findByEmail {
 
-    my $self = shift;
-    my $args = shift;
+    my $self  = shift;
+    my $email = shift;
+
+    my $rsp = $self->execute_method('flickr.people.findByEmail',{'find_email' => $email});
+    $rsp->_propagate_status($self->{flickr}->{status});
+
+    if ($rsp->success == 1) {
+
+        my $eresult = $rsp->as_hash();
+        $self->_set_status(1,"flickr.people.findByEmail successfully found " . $email);
+        $self->{flickr}->{user} = $eresult->{user};
+
+    }
+    else {
+
+        $self->_set_status(0,"Unable to find user with: " . $email);
+
+    }
 
     return;
 }
@@ -60,7 +67,23 @@ sub findByEmail {
 sub findByUsername {
 
     my $self = shift;
-    my $args = shift;
+    my $user = shift;
+
+    my $rsp = $self->execute_method('flickr.people.findByUsername',{'username' => $user});
+    $rsp->_propagate_status($self->{flickr}->{status});
+
+    if ($rsp->success == 1) {
+
+       my $uresult = $rsp->as_hash();
+       $self->_set_status(1,"flickr.people.findByUsername successfully found " . $user);
+       $self->{flickr}->{user} = $uresult->{user};
+
+    }
+    else {
+
+        $self->_set_status(0,"Unable to find user with: " . $user);
+
+    }
 
     return;
 }
@@ -73,35 +96,28 @@ sub perms {
 
 }
 
-sub error_code {
+sub nsid {
 
-    my $self = shift;
-    return $self->{flickr}->{status}->{error_code};
-
-}
-
-sub error_message {
-
-    my $self = shift;
-    my $text = $self->{flickr}->{status}->{error_message};
-    $text =~ s/\&quot;/\"/g;
-    return $text;
+    my $self=shift;
+    return $self->{flickr}->{user}->{nsid};
 
 }
 
-sub rc {
+sub username {
 
-    my $self = shift;
-    return $self->{flickr}->{status}->{_rc};
+    my $self=shift;
+    return $self->{flickr}->{user}->{username};
+
+}
+
+sub user {
+
+    my $self=shift;
+    return $self->{flickr}->{user};
 
 }
 
-sub success {
 
-    my $self = shift;
-    return $self->{flickr}->{status}->{success};
-
-}
 
 1;
 
@@ -135,21 +151,25 @@ Flickr's people information easily.
 
 =over
 
-=item C<error_code()>
+=item C<findByEmail()>
 
-Returns the Flickr Error Code, if any
+Populates user info with that found for the given email
 
-=item C<error_message()>
+=item C<findByUsername()>
 
-Returns the Flickr Error Message, if any
+Populates user info with that found for the given username
 
-=item C<success()>
+=item C<perms()>
 
-Returns the success or lack thereof from Flickr
+Returns the permission returned by checking this supplied token
 
-=item C<rc()>
+=item C<nsid()>
 
-Returns the Flickr http status code
+Returns the nsid of the supplied mail or username
+
+=item C<username()>
+
+Returns the username of the supplied mail or username
 
 =back
 
