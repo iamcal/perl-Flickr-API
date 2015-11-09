@@ -18,8 +18,6 @@ our @ISA = qw(LWP::UserAgent);
 
 our $VERSION = '1.25_01';
 
-
-
 sub new {
     my $class = shift;
     my $options = shift;
@@ -662,8 +660,7 @@ sub _initialize {
 sub _full_status {
 
     my $self = shift;
-    my $stat = $self->{flickr}->{status};
-    return;
+    return $self->{flickr}->{status};
 }
 
 sub _clear_status {

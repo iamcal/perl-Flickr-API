@@ -17,8 +17,26 @@ my $config_file  = $ENV{MAKETEST_OAUTH_CFG};
 my $config_ref;
 my $api;
 
+$api = Flickr::API->new(
+    { consumer_key    => '012345beefcafe543210',
+      consumer_secret => 'a234b345c456feed',
+  }
+);
+
+
+isa_ok($api, 'Flickr::API');
+
+
+my $suc = $api->api_success;
+
+my $sta = $api->_full_status;
+
+use Data::Dumper::Simple;
+warn Dumper($suc,$sta);
+
+
 my $fileflag=0;
-if (-r $config_file) { $fileflag = 1; }
+if ($config_file and -r $config_file) { $fileflag = 1; }
 is($fileflag, 1, "Is the config file: $config_file, readable?");
 
 SKIP: {
