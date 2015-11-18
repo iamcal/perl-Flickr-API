@@ -95,7 +95,7 @@ and testing of the Flickr::API module.
 
 
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 2015, Louis B. Moore C<< <lbmoore@cpan.org> >>.
 

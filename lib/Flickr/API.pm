@@ -16,9 +16,7 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.25';
-
-
+our $VERSION = '1.26';
 
 sub new {
     my $class = shift;
@@ -662,8 +660,7 @@ sub _initialize {
 sub _full_status {
 
     my $self = shift;
-    my $stat = $self->{flickr}->{status};
-    return;
+    return $self->{flickr}->{status};
 }
 
 sub _clear_status {

@@ -1,5 +1,11 @@
 Changes to Flickr::API
 
+1.26, 2015-11-17
+ * Removed references to oauth_token and oauth_token_secret since they
+   are redundant.
+ * Get some spelling consistent
+ * Tidy up a test script
+
 1.25, 2015-10-12
  * Realizing that there is benefit to keeping Flickr::API as close to
    perl core as practical and letting Flickr::Tools use Moo and more

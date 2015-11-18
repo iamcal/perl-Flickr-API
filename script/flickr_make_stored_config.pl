@@ -28,8 +28,8 @@ GetOptions (
 			'consumer_key=s',
 			'consumer_secret=s',
 			'callback=s',
-			'oauth_token=s',
-			'oauth_token_secret=s',
+			'token=s',
+			'token_secret=s',
 			'help',
 			'man',
 			'usage'
@@ -124,28 +124,28 @@ if ( $cli_args->{'api_type'} eq 'flickr' ) {
 
 else {
 
-	$config->{'consumer_key'}       = undef;
-	$config->{'consumer_secret'}    = undef;
-	$config->{'callback'}           = undef;
-	$config->{'oauth_token_secret'} = undef;
-	$config->{'oauth_token'}        = undef;
+	$config->{'consumer_key'}     = undef;
+	$config->{'consumer_secret'}  = undef;
+	$config->{'callback'}         = undef;
+	$config->{'token_secret'}     = undef;
+	$config->{'token'}            = undef;
 
 	if (defined($inconfig->{'consumer_key'}))    { $config->{'consumer_key'}     = $inconfig->{'consumer_key'}; }
 	if (defined($inconfig->{'consumer_secret'})) { $config->{'consumer_secret'}  = $inconfig->{'consumer_secret'}; }
 	if (defined($inconfig->{'callback'}))        { $config->{'callback'}         = $inconfig->{'callback'}; }
-	if (defined($inconfig->{'oauth_token_secret'})) {
-		$config->{'oauth_token_secret'} = $inconfig->{'oauth_token_secret'};
+	if (defined($inconfig->{'token_secret'})) {
+		$config->{'token_secret'} = $inconfig->{'token_secret'};
 	}
-	if (defined($inconfig->{'oauth_token'}))     { $config->{'oauth_token'}      = $inconfig->{'oauth_token'}; }
+	if (defined($inconfig->{'token'}))     { $config->{'token'}      = $inconfig->{'token'}; }
 
 
 	if (defined($cli_args->{'consumer_key'}))    { $config->{'consumer_key'}     = $cli_args->{'consumer_key'}; }
 	if (defined($cli_args->{'consumer_secret'})) { $config->{'consumer_secret'}  = $cli_args->{'consumer_secret'}; }
 	if (defined($cli_args->{'callback'}))        { $config->{'callback'}         = $cli_args->{'callback'}; }
-	if (defined($cli_args->{'oauth_token_secret'})) {
-		$config->{'oauth_token_secret'} = $cli_args->{'oauth_token_secret'};
+	if (defined($cli_args->{'token_secret'})) {
+		$config->{'token_secret'} = $cli_args->{'token_secret'};
 	}
-	if (defined($cli_args->{'oauth_token'}))     { $config->{'oauth_token'}      = $cli_args->{'oauth_token'}; }
+	if (defined($cli_args->{'token'}))     { $config->{'token'}      = $cli_args->{'token'}; }
 
 
 	unless (defined($config->{'consumer_key'})) {
@@ -309,7 +309,8 @@ B< >
 
 B< >
 
-=item  B<--token> The auth token when used with Flickr authentication
+=item  B<--token> The auth token can be either a Flickr or OAuth Access token 
+       used with Flickr authentication
 
 B< >
 
@@ -332,11 +333,7 @@ B< >
 
 B< >
 
-=item  B<--oauth_token> The OAuth access token
-
-B< >
-
-=item  B<--oauth_token_secret> The OAuth access token secret
+=item  B<--token_secret> The OAuth access token secret
 
 B< >
 
@@ -381,7 +378,7 @@ or
 
 
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 2015, Louis B. Moore C<< <lbmoore@cpan.org> >>.
 
