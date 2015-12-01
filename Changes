@@ -1,5 +1,8 @@
 Changes to Flickr::API
 
+1.27,  
+ * Get Flickr::API::People into shape for the Tools.
+
 1.26, 2015-11-17
  * Removed references to oauth_token and oauth_token_secret since they
    are redundant.
