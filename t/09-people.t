@@ -5,7 +5,7 @@ use Flickr::API::People;
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
 
-#    plan( tests => 7 );
+    plan( tests => 16 );
 }
 else {
     plan(skip_all => 'People tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
@@ -59,7 +59,7 @@ SKIP: {
     );
 
   SKIP: {
-        skip "Skipping some people tests, values file isn't there or is not readable", 2   ##########
+        skip "Skipping some people tests, values file isn't there or is not readable", 11   ##########
             if $valsflag == 0;
 
         my %peoplevalues = (
@@ -109,10 +109,35 @@ SKIP: {
         );
 
         is(
+            $api->findByUsername('a-non-existent-user-name-nom-nom.noway.nohow.nom'),
+            undef,
+            'did we fail to get username on bogus username search'
+        );
+
+        is(
             $api->findByUsername($peoplevalues{'search_username'}),
             $peoplevalues{'search_username'},
             'did we get the correct username from a username search'
         );
+
+        is(
+            $api->username,
+            $peoplevalues{'search_username'},
+            'did we get the correct username from the api object'
+        );
+
+        isnt(
+            $api->nsid,
+            '',
+            'did we get and nsid from the username search'
+        );
+
+        is(
+            ref($api->user),
+            'HASH',
+            'did we get a user hash from the username search'
+        );
+
 
         is(
             $api->findByUsername('a-non-existent-user-name-nom-nom.noway.nohow.nom'),
@@ -120,16 +145,10 @@ SKIP: {
             'did we fail to get username on bogus username search'
         );
 
-    use Data::Dumper::Simple;
-#    warn Dumper(%peoplevalues,$vlad,$vald);
-
-
     } # vals File
 
 } # oauth config
 
-
-done_testing;
 
 exit;
 

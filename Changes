@@ -1,7 +1,9 @@
 Changes to Flickr::API
 
-1.27,  
+1.27, 2015-12-02 
  * Get Flickr::API::People into shape for the Tools.
+ * Added some methods for asking about a people object's
+   calling user and searched user.
 
 1.26, 2015-11-17
  * Removed references to oauth_token and oauth_token_secret since they

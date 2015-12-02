@@ -99,39 +99,44 @@ sub findByUsername {
 
 
 sub perms {
-
     my $self=shift;
     return $self->{flickr}->{token}->{perms};
+}
 
+sub perms_caller {
+    my $self=shift;
+    return $self->{flickr}->{token}->{user}->{username};
+}
+
+sub perms_nsid {
+    my $self=shift;
+    return $self->{flickr}->{token}->{user}->{nsid};
+}
+
+sub perms_token {
+    my $self=shift;
+    return $self->{flickr}->{token}->{token};
 }
 
 sub nsid {
-
     my $self=shift;
     return $self->{flickr}->{user}->{nsid};
-
 }
 
 sub username {
-
     my $self=shift;
     return $self->{flickr}->{user}->{username};
-
 }
 
 sub user {
-
     my $self=shift;
     return $self->{flickr}->{user};
-
 }
 
 sub clear_user {
-
     my $self=shift;
     delete $self->{flickr}->{user};
     return;
-
 }
 
 
@@ -179,6 +184,18 @@ Populates user info with that found for the given username
 =item C<perms()>
 
 Returns the permission returned by checking this supplied token
+
+=item C<perms_caller>
+
+Returns the username for which the permission applies
+
+=item C<perms_token>
+
+Returns the token for which the permission applies
+
+=item C<perms_nsid>
+
+Returns the nsid for which the permission applies
 
 =item C<nsid()>
 
