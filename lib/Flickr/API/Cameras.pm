@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.26';
+our $VERSION = '1.27';
 
 sub _initialize {
 

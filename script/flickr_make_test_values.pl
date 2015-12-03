@@ -15,12 +15,12 @@ my $cli_args = {};
 
 my %defaults = (
     'search_email' => '',
-    'search_user'  => '',
+    'search_username'  => '',
     );
 
 my %prompts = (
     'search_email' => 'An email to search for',
-    'search_user'  => 'A user id to search for',
+    'search_username'  => 'A user id to search for',
     );
 
 my $invalues = \%defaults;
