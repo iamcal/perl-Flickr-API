@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Carp;
 
-use Data::Dumper::Simple;
-
 use parent qw( Flickr::API );
 our $VERSION = '1.27';
 
