@@ -10,6 +10,7 @@ use Data::Dumper;
 use Getopt::Long;
 use Term::ReadKey;
 use Term::ReadLine;
+use Pod::Usage;
 
 =pod
 
@@ -28,6 +29,8 @@ authenticated token.
     --consumer_secret="de0cafe4feed0242" \
   [ --perms={read,write,delete} \]
   [ --config_out="/path/to/a/writable/config.st" ]
+  [ --help ]
+  [ --man ]
 
 If not specified, perms defaults to read.
 
@@ -60,7 +63,16 @@ GetOptions (
     'consumer_secret=s',
     'perms=s',
     'config_out=s',
+    'help|?|usage',
+    'man'
 );
+
+pod2usage(1)  if ($cli_args->{help});
+pod2usage(-verbose => 2)  if ($cli_args->{man});
+
+#
+# get $cli_args prepared to pass into API
+#
 
 my $permstr = $cli_args->{'perms'};
 delete $cli_args->{'perms'};
