@@ -6,7 +6,7 @@ use HTTP::Response;
 
 use parent qw(HTTP::Response);
 
-our $VERSION = '1.27';
+our $VERSION = '1.27_01';
 
 sub new {
     my $class = shift;
@@ -46,40 +46,40 @@ sub set_ok {
 # some accessors
 #
 sub as_tree {
-    my $self = shift;
+    my ($self) = @_;
 
     if (defined $self->{tree}) {
 
         return $self->{tree};
     }
     else {
-        return undef;
+        return;
     }
 }
 
 
 sub as_hash {
-    my $self = shift;
+    my ($self) = @_;
 
     if (defined $self->{hash}) {
 
         return $self->{hash};
     }
     else {
-        return undef;
+        return;
     }
 }
 
 sub error_code {
 
-    my $self = shift;
+    my ($self) = @_;
     return $self->{error_code};
 
 }
 
 sub error_message {
 
-    my $self = shift;
+    my ($self) = @_;
     my $text = $self->{error_message};
     $text =~ s/\&quot;/\"/g;
     return $text;
@@ -88,14 +88,14 @@ sub error_message {
 
 sub success {
 
-    my $self = shift;
+    my ($self) = @_;
     return $self->{success};
 
 }
 
 sub rc {
 
-    my $self = shift;
+    my ($self) = @_;
     return $self->{_rc};
 
 }
