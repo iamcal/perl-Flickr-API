@@ -1,5 +1,15 @@
 Changes to Flickr::API
 
+1.27_01, 2016-09-21
+ * Add Flickr::API::Upload
+ * Flickr::API Be more consistent using my ($self, $args,...) = @_; and not shift
+ * Flickr::API Change from using $options to $args for consistancy
+ * Flickr::API Add upload method
+ * Flickr::API add api_type method
+ * Flickr::API add api_permissions method
+ * Flickr::API stop using "return undef;"
+ * Flickr::API::Response Be more consistent using my ($self, $args,...) = @_; and not shift
+
 1.27, 2015-12-02 
  * Get Flickr::API::People into shape for the Tools.
  * Added some methods for asking about a people object's

@@ -16,15 +16,14 @@ use Storable qw(store_fd retrieve_fd);
 
 our @ISA = qw(LWP::UserAgent);
 
-our $VERSION = '1.27';
+our $VERSION = '1.27_01';
 
 sub new {
-    my $class = shift;
-    my $options = shift;
+    my ($class, $args) = @_;
 
     my $self;
-    if ($options->{lwpobj}){
-        my $lwpobj = $options->{lwpobj};
+    if ($args->{lwpobj}){
+        my $lwpobj = $args->{lwpobj};
         if (defined($lwpobj)){
             my $lwpobjtype = Scalar::Util::blessed($lwpobj);
             if (defined($lwpobjtype)){
@@ -36,35 +35,36 @@ sub new {
     $self = LWP::UserAgent->new unless $self;
 
     #
-    # If the options have consumer_key, handle as oauth
+    # If the args have consumer_key, handle as oauth
     #
-    if (defined($options->{consumer_key})) {
+    if (defined($args->{consumer_key})) {
 
-        $self->{api_type} = 'oauth';
-        $self->{rest_uri} = $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
-        $self->{auth_uri} = $options->{auth_uri} || 'https://api.flickr.com/services/oauth/authorize';
+        $self->{api_type}   = 'oauth';
+        $self->{rest_uri}   = $args->{rest_uri}   || 'https://api.flickr.com/services/rest/';
+        $self->{auth_uri}   = $args->{auth_uri}   || 'https://api.flickr.com/services/oauth/authorize';
+        $self->{upload_uri} = $args->{upload_uri} || 'https://api.flickr.com/services/upload/';
 
-        if (defined($options->{consumer_secret})) {
+        if (defined($args->{consumer_secret})) {
 
             #
             # for the flickr api object
             #
             $self->{oauth_request}   = 'consumer';
-            $self->{consumer_key}    = $options->{consumer_key};
-            $self->{consumer_secret} = $options->{consumer_secret};
-            $self->{unicode}         = $options->{unicode}           || 0;
+            $self->{consumer_key}    = $args->{consumer_key};
+            $self->{consumer_secret} = $args->{consumer_secret};
+            $self->{unicode}         = $args->{unicode}           || 0;
             #
             # for Net::OAuth Consumer Requests
             #
-            $self->{oauth}->{request_method}   = $options->{request_method}    || 'GET';
+            $self->{oauth}->{request_method}   = $args->{request_method}    || 'GET';
             $self->{oauth}->{request_url}      = $self->{rest_uri};
-            $self->{oauth}->{consumer_secret}  = $options->{consumer_secret};
-            $self->{oauth}->{consumer_key}     = $options->{consumer_key};
-            $self->{oauth}->{nonce}            = $options->{nonce}             || _make_nonce();
-            $self->{oauth}->{signature_method} = $options->{signature_method}  ||'HMAC-SHA1';
-            $self->{oauth}->{timestamp}        = $options->{timestamp}         || time;
+            $self->{oauth}->{consumer_secret}  = $args->{consumer_secret};
+            $self->{oauth}->{consumer_key}     = $args->{consumer_key};
+            $self->{oauth}->{nonce}            = $args->{nonce}             || _make_nonce();
+            $self->{oauth}->{signature_method} = $args->{signature_method}  ||'HMAC-SHA1';
+            $self->{oauth}->{timestamp}        = $args->{timestamp}         || time;
             $self->{oauth}->{version}          = '1.0';
-            $self->{oauth}->{callback}         = $options->{callback};
+            $self->{oauth}->{callback}         = $args->{callback};
 
         }
         else {
@@ -74,13 +74,13 @@ sub new {
 
         }
 
-        if (defined($options->{token}) && defined($options->{token_secret})) {
+        if (defined($args->{token}) && defined($args->{token_secret})) {
 
             #
             # If we have token/token secret then we are for protected resources
             #
-            $self->{oauth}->{token_secret} = $options->{token_secret};
-            $self->{oauth}->{token}        = $options->{token};
+            $self->{oauth}->{token_secret} = $args->{token_secret};
+            $self->{oauth}->{token}        = $args->{token};
             $self->{oauth_request}         = 'protected resource';
 
         }
@@ -88,16 +88,16 @@ sub new {
         #
         # Preserve request and access tokens
         #
-        if (defined($options->{request_token}) and
-            ref($options->{request_token}) eq 'Net::OAuth::V1_0A::RequestTokenResponse') {
+        if (defined($args->{request_token}) and
+            ref($args->{request_token}) eq 'Net::OAuth::V1_0A::RequestTokenResponse') {
 
-            $self->{oauth}->{request_token} = $options->{request_token};
+            $self->{oauth}->{request_token} = $args->{request_token};
 
         }
-        if (defined($options->{access_token}) and
-            ref($options->{access_token}) eq 'Net::OAuth::AccessTokenResponse') {
+        if (defined($args->{access_token}) and
+            ref($args->{access_token}) eq 'Net::OAuth::AccessTokenResponse') {
 
-            $self->{oauth}->{access_token} = $options->{access_token};
+            $self->{oauth}->{access_token} = $args->{access_token};
 
         }
     }
@@ -105,16 +105,17 @@ sub new {
     else {
 
         $self->{api_type}   = 'flickr';
-        $self->{api_key}     = $options->{key};
-        $self->{api_secret}  = $options->{secret};
-        $self->{rest_uri}    = $options->{rest_uri} || 'https://api.flickr.com/services/rest/';
-        $self->{auth_uri}    = $options->{auth_uri} || 'https://api.flickr.com/services/auth/';
-        $self->{unicode}     = $options->{unicode}  || 0;
+        $self->{api_key}     = $args->{api_key}    || $args->{key};
+        $self->{api_secret}  = $args->{api_secret} || $args->{secret};
+        $self->{rest_uri}    = $args->{rest_uri}   || 'https://api.flickr.com/services/rest/';
+        $self->{auth_uri}    = $args->{auth_uri}   || 'https://api.flickr.com/services/auth/';
+        $self->{upload_uri}  = $args->{upload_uri} || 'https://api.flickr.com/services/upload/';
+        $self->{unicode}     = $args->{unicode}    || 0;
 
-        $self->{fauth}->{frob}    = $options->{frob};
-        $self->{fauth}->{key}     = $options->{key};
-        $self->{fauth}->{secret}  = $options->{secret};
-        $self->{fauth}->{token}   = $options->{token};
+        $self->{fauth}->{frob}       = $args->{frob};
+        $self->{fauth}->{api_key}    = $self->{api_key};
+        $self->{fauth}->{api_secret} = $self->{api_secret};
+        $self->{fauth}->{token}      = $args->{token};
 
         carp "You must pass an API key or a Consumer key to the constructor" unless defined $self->{api_key};
 
@@ -268,6 +269,71 @@ sub execute_request {
 }
 
 
+
+sub upload {
+    my ($self, $args) = @_;
+    my $upload;
+
+    unless ($self->api_permissions() eq 'write' || $self->api_permissions() eq 'delete') {
+        croak "insufficient permission for upload";
+    }
+
+    my %cfg = $self->export_config;
+    $cfg{'request_url'} = $self->{upload_uri};
+
+    $upload = Flickr::API::Upload->new({
+        'photo'       => $args,
+        'api'         => \%cfg,
+        'api_type'    => $self->api_type(),
+    });
+
+    my $response = $self->request($upload);
+    bless $response, 'Flickr::API::Response';
+
+    $response->init_flickr();
+
+    if ($response->{_rc} != 200){
+        $response->set_fail(0, "Upload returned a non-200 status code ($response->{_rc})");
+        return $response;
+    }
+
+    my $content = $response->decoded_content();
+    $content = $response->content() unless defined $content;
+
+    my $xls  = XML::LibXML::Simple->new(ForceArray => 0);
+    my $tree = XML::Parser::Lite::Tree::instance()->parse($content);
+
+    my $hashref  = $xls->XMLin($content,KeyAttr => []);
+
+    my $rsp_node = $self->_find_tag($tree->{children});
+
+    if ($rsp_node->{name} ne 'rsp'){
+        $response->set_fail(0, "Upload returned an invalid response");
+        return $response;
+    }
+
+    if ($rsp_node->{attributes}->{stat} eq 'fail'){
+        my $fail_node = $self->_find_tag($rsp_node->{children});
+        if ($fail_node->{name} eq 'err'){
+            $response->set_fail($fail_node->{attributes}->{code}, $fail_node->{attributes}->{msg});
+        }
+        else {
+            $response->set_fail(0, "Upload failed but returned no error code");
+        }
+        return $response;
+    }
+
+    if ($rsp_node->{attributes}->{stat} eq 'ok'){
+        $response->set_ok($rsp_node,$hashref);
+        return $response;
+    }
+
+    $response->set_fail(0, "API returned an invalid status code");
+
+    return $response;
+
+}
+
 #
 # Persistent config methods
 #
@@ -279,9 +345,7 @@ sub execute_request {
 # on OAuth message type.
 #
 sub export_config {
-    my $self   = shift;
-    my $type   = shift;
-    my $params = shift;
+    my ($self, $type, $params) = @_;
 
     if ($self->is_oauth) {
 
@@ -318,9 +382,7 @@ sub export_config {
 # Use perl core Storable to save important parameters.
 #
 sub export_storable_config {
-
-    my $self = shift;
-    my $file = shift;
+    my ($self,$file) = @_;
 
     open my $EXPORT, '>', $file or croak "\nCannot open $file for write: $!\n";
     my %config = $self->export_config();
@@ -333,9 +395,7 @@ sub export_storable_config {
 #  Use perl core Storable for re-vivifying an API object from saved parameters
 #
 sub import_storable_config {
-
-    my $class = shift;
-    my $file = shift;
+    my ($class,$file) = @_;
 
     open my $IMPORT, '<', $file or croak "\nCannot open $file for read: $!\n";
     my $config_ref = retrieve_fd($IMPORT);
@@ -352,30 +412,29 @@ sub import_storable_config {
 # Handle request token requests (process: REQUEST TOKEN, authorize, access token)
 #
 sub oauth_request_token {
+    my ($self, $args) = @_;
 
-    my $self    = shift;
-    my $options = shift;
-    my %args    = %{$self->{oauth}};
+    my %oauth    = %{$self->{oauth}};
 
     unless ($self->is_oauth) {
         carp "\noauth_request_token called for Non-OAuth Flickr::API object\n";
-        return undef;
+        return;
     }
     unless ($self->get_oauth_request_type() eq 'consumer') {
         croak "\noauth_request_token called using protected resource Flickr::API object\n";
     }
 
     $self->{oauth_request} = 'Request Token';
-    $args{request_url}     = $options->{request_token_url} || 'https://api.flickr.com/services/oauth/request_token';
-    $args{callback}        = $options->{callback} || 'https://127.0.0.1';
+    $oauth{request_url}    = $args->{request_token_url} || 'https://api.flickr.com/services/oauth/request_token';
+    $oauth{callback}       = $args->{callback} || 'https://127.0.0.1';
 
     $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
-    my $request = Net::OAuth->request('Request Token')->new(%args);
+    my $orequest = Net::OAuth->request('Request Token')->new(%oauth);
 
-    $request->sign;
+    $orequest->sign;
 
-    my $response = $self->get($request->to_url);
+    my $response = $self->get($orequest->to_url);
 
     my $content  = $response->decoded_content();
     $content = $response->content() unless defined $content;
@@ -388,36 +447,34 @@ sub oauth_request_token {
     }
 
     $self->{oauth}->{request_token}     = Net::OAuth->response('request token')->from_post_body($content);
-    $self->{oauth}->{callback}          = $args{callback};
+    $self->{oauth}->{callback}          = $oauth{callback};
     return 'ok';
 }
-
 
 #
 # Participate in authorization (process: request token, AUTHORIZE, access token)
 #
 sub oauth_authorize_uri {
 
-    my $self    = shift;
-    my $options = shift;
+    my ($self, $args) = @_;
 
     unless ($self->is_oauth) {
         carp "oauth_authorize_uri called for Non-OAuth Flickr::API object";
-        return undef;
+        return;
     }
-    my %args    = %{$self->{oauth}};
+    my %oauth    = %{$self->{oauth}};
 
     $self->{oauth_request} = 'User Authentication';
-    $args{perms}           = lc($options->{perms}) || 'read';
+    $oauth{perms}           = lc($args->{perms}) || 'read';
 
     carp "\nThe 'perms' parameter must be one of: read, write, delete\n"
-        and return unless defined($args{perms}) && $args{perms} =~ /^(read|write|delete)$/;
+        and return unless defined($oauth{perms}) && $oauth{perms} =~ /^(read|write|delete)$/;
 
     $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
     return $self->{auth_uri} .
-      '?oauth_token=' . $args{'request_token'}{'token'} .
-      '&perms=' . $args{perms};
+      '?oauth_token=' . $oauth{'request_token'}{'token'} .
+      '&perms=' . $oauth{perms};
 
 }
 
@@ -426,14 +483,12 @@ sub oauth_authorize_uri {
 #
 
 sub request_auth_url {
-    my $self  = shift;
-    my $perms = shift;
-    my $frob  = shift;
+    my ($self, $perms, $frob) = @_;
 
     if ($self->is_oauth) {
 
         carp "request_auth_url called for an OAuth instantiated Flickr::API";
-        return undef;
+        return;
 
     }
 
@@ -442,22 +497,22 @@ sub request_auth_url {
     carp "\nThe 'perms' parameter must be one of: read, write, delete\n"
         and return unless defined($perms) && $perms =~ /^(read|write|delete)$/;
 
-    return undef unless defined $self->{api_secret} && length $self->{api_secret};
+    return unless defined $self->{api_secret} && length $self->{api_secret};
 
-    my %args = (
+    my %fauth = (
         'api_key' => $self->{api_key},
         'perms'   => $perms
     );
 
     if ($frob) {
-        $args{frob} = $frob;
+        $fauth{frob} = $frob;
     }
 
-    my $sig = $self->_sign_args(\%args);
-    $args{api_sig} = $sig;
+    my $sig = $self->_sign_args(\%fauth);
+    $fauth{api_sig} = $sig;
 
     my $uri = URI->new($self->{auth_uri});
-    $uri->query_form(%args);
+    $uri->query_form(%fauth);
 
     return $uri;
 }
@@ -470,34 +525,33 @@ sub request_auth_url {
 #
 sub oauth_access_token {
 
-    my $self    = shift;
-    my $options = shift;
+    my ($self, $args) = @_;
 
     unless ($self->is_oauth) {
         carp "oauth_access_token called for Non-OAuth Flickr::API object";
-        return undef;
+        return;
     }
-    if ($options->{token} ne $self->{oauth}->{request_token}->{token}) {
+    if ($args->{token} ne $self->{oauth}->{request_token}->{token}) {
 
         carp "Request token in API does not match token for access token request";
-        return undef;
+        return;
 
     }
 
     #
     # Stuff the values for the Net::OAuth factory
     #
-    $self->{oauth}->{verifier}     = $options->{verifier};
-    $self->{oauth}->{token}        = $options->{token};
+    $self->{oauth}->{verifier}     = $args->{verifier};
+    $self->{oauth}->{token}        = $args->{token};
     $self->{oauth}->{token_secret} = $self->{oauth}->{request_token}->{token_secret};
 
-    my %args   = %{$self->{oauth}};
+    my %oauth   = %{$self->{oauth}};
 
-    $args{request_url} = $options->{access_token_url} || 'https://api.flickr.com/services/oauth/access_token';
+    $oauth{request_url} = $args->{access_token_url} || 'https://api.flickr.com/services/oauth/access_token';
 
     $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
-    my $request = Net::OAuth->request('Access Token')->new(%args);
+    my $request = Net::OAuth->request('Access Token')->new(%oauth);
 
     $request->sign;
 
@@ -530,11 +584,8 @@ sub oauth_access_token {
 
 }
 
-
-
 sub flickr_access_token {
-    my $self = shift;
-    my $frob = shift;
+    my ($self,$frob) = @_;
 
     my $rsp = $self->execute_method('flickr.auth.getToken', {api_key => $self->{api_key}, frob => $frob });
     my $response_ref = $rsp->as_hash();
@@ -557,7 +608,7 @@ sub flickr_access_token {
 
 
 sub is_oauth {
-    my $self = shift;
+    my ($self) = @_;
     if (defined $self->{api_type} and $self->{api_type} eq 'oauth') {
         return 1;
     }
@@ -568,26 +619,123 @@ sub is_oauth {
 
 
 sub get_oauth_request_type {
-    my $self = shift;
+    my ($self) = @_;
 
     if (defined $self->{api_type} and $self->{api_type} eq 'oauth') {
         return $self->{oauth_request};
     }
     else {
-        return undef;
+        return;
     }
 }
 
+sub api_type {
+    my ($self) = @_;
+
+    return $self->{api_type};
+
+}
+
+
 sub api_success {
-    my $self = shift;
+    my ($self) = @_;
 
     return $self->{flickr}->{status}->{api_success};
 
 }
+
+
+
+
 sub api_message {
-    my $self = shift;
+   my ($self) = @_;
 
     return $self->{flickr}->{status}->{api_message};
+}
+
+
+sub api_permissions {
+    my ($self) = @_;
+    my $rsp;
+    my $check;
+    my $retval;
+
+    if ($self->is_oauth) {
+
+        if (defined($self->{oauth}->{perms})) {
+
+            $self->_set_status(1,"Permissions retrieved from config.");
+
+        }
+        else {
+
+            $self->{oauth}->{perms} = 'none'; #preload no perms
+
+            $rsp = $self->execute_method('flickr.auth.oauth.checkToken');
+
+            if (!$rsp->success()) {
+
+                $rsp->_propagate_status($self->{flickr}->{status});
+
+                carp "\nUnable to validate OAuth token. Flickr error: ",
+                    $self->{flickr}->{status}->{error_code}," - \"",
+                    $self->{flickr}->{status}->{error_message},"\" \n";
+                delete $self->{oauth}->{perms};
+                $self->_set_status(0,"Unable to validate OAuth token, Flickr API call not successful.");
+
+            }
+            else {
+
+                $check = $rsp->as_hash();
+
+                $self->{oauth}->{perms} = $check->{oauth}->{perms};
+                $self->_set_status(1,"Permissions retrieved from Flickr.");
+
+            }
+        } # else not cached
+
+        $retval = $self->{oauth}->{perms};
+
+    } # is_oauth
+    else { # is_flickr
+
+        if (defined($self->{fauth}->{perms})) {
+
+             $self->_set_status(1,"Permissions retrieved from config.");
+
+        }
+        else {
+
+            $self->{fauth}->{perms} = 'none'; #preload no perms
+            $rsp = $self->execute_method('flickr.auth.checkToken',{'auth_token' => $self->{fauth}->{token}});
+
+            if (!$rsp->success()) {
+
+                $rsp->_propagate_status($self->{flickr}->{status});
+
+                carp "\nUnable to validate Flickr token. Flickr error: ",
+                    $self->{flickr}->{status}->{error_code}," - \"",
+                    $self->{flickr}->{status}->{error_message},"\" \n";
+                delete $self->{fauth}->{perms};
+                $self->_set_status(0,"Unable to validate Flickr token, Flickr API call not successful.");
+
+            }
+            else {
+
+                $check = $rsp->as_hash();
+
+                $self->{fauth}->{perms} = $check->{auth}->{perms};
+                $self->_set_status(1,"Permissions retrieved from Flickr.");
+           }
+        } # else not cached
+
+        $retval = $self->{fauth}->{perms};
+
+    } # else is_flickr
+
+
+    return $retval;
+
 }
 
 
@@ -596,13 +744,12 @@ sub api_message {
 #
 
 sub _sign_args {
-    my $self = shift;
-    my $args = shift;
+    my ($self, $args) = @_;
 
     if ($self->is_oauth) {
 
         carp "_sign_args called for an OAuth instantiated Flickr::API";
-        return undef;
+        return;
 
     }
 
@@ -632,7 +779,7 @@ sub _make_nonce {
 
 }
 sub _export_api {
-    my $self = shift;
+    my ($self) = @_;
     my $api  = {};
 
     $api->{oauth}       = $self->{oauth};
@@ -645,6 +792,7 @@ sub _export_api {
     $api->{rest_uri}    =  $self->{rest_uri};
     $api->{unicode}     =  $self->{unicode};
     $api->{auth_uri}    =  $self->{auth_uri};
+    $api->{upload_uri}  =  $self->{upload_uri};
 
     return $api;
 }
@@ -652,20 +800,21 @@ sub _export_api {
 
 sub _initialize {
 
-    my $self = shift;
+    my ($self) = @_;
     $self->_set_status(1,'Base API initialized');
+    return;
 
 }
 
 sub _full_status {
 
-    my $self = shift;
+    my ($self) = @_;
     return $self->{flickr}->{status};
 }
 
 sub _clear_status {
 
-    my $self = shift;
+    my ($self) = @_;
 
     # the API status
     $self->_set_status(1,'');
@@ -681,9 +830,7 @@ sub _clear_status {
 
 sub _set_status {
 
-    my $self  =  shift;
-    my $good  =  shift;
-    my $msg   =  shift;
+    my ($self, $good, $msg) = @_;
 
     if ($good != 0) { $good = 1; }
 

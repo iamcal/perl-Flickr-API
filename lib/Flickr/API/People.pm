@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.27';
+our $VERSION = '1.27_01';
 
 
 sub _initialize {
@@ -13,7 +13,7 @@ sub _initialize {
     my $self=shift;
     my $check;
 
-
+        #if $self->api_permissions . . .
         my $rsp = $self->execute_method('flickr.auth.oauth.checkToken');
 
         if (!$rsp->success()) {
