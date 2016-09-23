@@ -20,6 +20,8 @@ my $api = Flickr::API->new({
 isa_ok($api, 'Flickr::API');
 is($api->is_oauth, 0, 'Does Flickr::API object identify as Flickr authentication');
 
+is($api->api_type, 'flirckr', 'Does Flickr::API object correctly specify its type as flickr');
+
 ########################################################
 #
 # make sure it returns the required api params
