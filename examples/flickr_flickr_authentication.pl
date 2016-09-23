@@ -19,7 +19,7 @@ use Pod::Usage;
 The original Flickr Authentication has been deprecated in favor
 of OAuth. The example flickr_oauth_authentication.pl should be
 used in favor of this one. However, this script uses the deprecated--
-but seemingly still alive-- Flickr authentication to go from having 
+but seemingly still alive-- Flickr authentication to go from having
 just the api_key and api_secret to an authenticated token.
 
 =head1 USAGE
@@ -190,17 +190,17 @@ stashed in the Flickr::API object.
 
 How you save the access information is outside the scope of this
 example. However, the B<export_config> method can be used
-to retrieve the oauth parameters from the Flickr::API object.
+to retrieve the flickr parameters from the Flickr::API object.
 
-  my %oconfig = $api->export_config('protected resource');
+  my %fconfig = $api->export_config();
 
-  print Dumper(\%oconfig);
+  print Dumper(\%fconfig);
 
 =cut
 
-my %config = $api->export_config();
+my %fconfig = $api->export_config();
 
-print Dumper(\%config);
+print Dumper(\%fconfig);
 
 if ($configfile) { $api->export_storable_config($configfile); }
 
