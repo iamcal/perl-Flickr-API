@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use File::Temp ();
 
 use Flickr::API;
@@ -20,7 +20,7 @@ my $api = Flickr::API->new({
 isa_ok($api, 'Flickr::API');
 is($api->is_oauth, 0, 'Does Flickr::API object identify as Flickr authentication');
 
-is($api->api_type, 'flirckr', 'Does Flickr::API object correctly specify its type as flickr');
+is($api->api_type, 'flickr', 'Does Flickr::API object correctly specify its type as flickr');
 
 ########################################################
 #

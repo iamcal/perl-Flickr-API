@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 31;
+use Test::More tests => 32;
 use Test::Script;
 use File::Temp ();
 
@@ -24,7 +24,7 @@ isa_ok($api, 'Flickr::API');
 is($api->is_oauth, 1, 'Does Flickr::API object identify as OAuth');
 is($api->get_oauth_request_type(), 'consumer', 'Does Flickr::API object identify as consumer request');
 
-is($api->api_type, 'oauther', 'Does Flickr::API object correctly specify its type as oauth');
+is($api->api_type, 'oauth', 'Does Flickr::API object correctly specify its type as oauth');
 
 ########################################################
 #
