@@ -112,6 +112,18 @@ sub new {
         $self->{upload_uri}  = $args->{upload_uri} || 'https://api.flickr.com/services/upload/';
         $self->{unicode}     = $args->{unicode}    || 0;
 
+        if (defined($args->{key}) or defined ($self->{key})) {
+            delete $args->{key};
+            delete $self->{key};
+            carp "Argument 'key' is deprecated and has been changed to api_key";
+        }
+
+        if (defined ($args->{secret}) or defined ($self->{secret})) {
+            delete $args->{secret};
+            delete $self->{secret};
+            carp "Argument 'secret' is deprecated and has been changed to api_secret";
+        }
+
         $self->{fauth}->{frob}       = $args->{frob};
         $self->{fauth}->{api_key}    = $self->{api_key};
         $self->{fauth}->{api_secret} = $self->{api_secret};
@@ -875,9 +887,12 @@ Flickr::API - Perl interface to the Flickr API
 
   use Flickr::API;
 
+  # key deprecated in favor of api_key
+  # secret deprecated in favor of api_secret
+  #
   my $api = Flickr::API->new({
-        'key'    => 'your_api_key',
-        'secret' => 'your_app_secret',
+        'api_key'    => 'your_api_key',
+        'api_secret' => 'your_app_secret',
     });
 
   my $response = $api->execute_method('flickr.test.echo', {
@@ -980,13 +995,13 @@ Returns as new L<Flickr::API> object. The options are as follows:
 
 =over
 
-=item either C<key> for the Flickr auth or C<consumer_key> for OAuth
+=item either C<api_key> for the Flickr auth or C<consumer_key> for OAuth
 
 Your API key (one or the other form is required)
 
-=item either C<secret> for the Flickr auth or C<consumer_secret> for OAuth
+=item either C<api_secret> for the Flickr auth or C<consumer_secret> for OAuth
 
-Your API key's secret (the one matching the key/consumer_key is required)
+Your API key's secret (the one matching the api_key/consumer_key is required)
 
 =item C<rest_uri> & C<auth_uri>
 
@@ -1063,12 +1078,14 @@ hashref
 
   $VAR1 = {
             'frob' => '12332112332112300-feedabcde123456c-1234567',
-            'key' => 'cafefeedbeef13579246801234567890',
-            'secret' => 'beef321432154321',
+            'api_key' => 'cafefeedbeef13579246801234567890',
+            'api_secret' => 'beef321432154321',
             'token' => '97531086421234567-cafe123456789abc'
           };
 
-or the subset thereof depending on what has been used by the API.
+or the subset thereof depending on what has been used by the API. If the older form
+of key/secret was used, the constructor will change these to the api_key/api_secret
+forms.
 
 
 If the API object identifies as OAuth authentication, and C<message type> is
@@ -1244,7 +1261,7 @@ OAuth patches and additions Louis B. Moore <lbmoore@cpan.org>
 Copyright (C) 2004-2013, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
 OAuth patches and additions
-Copyright (C) 2014-2015 Louis B. Moore <lbmoore@cpan.org>
+Copyright (C) 2014-2016 Louis B. Moore <lbmoore@cpan.org>
 
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
