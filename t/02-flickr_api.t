@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 15;
 use File::Temp ();
 
 use Flickr::API;
@@ -14,7 +14,7 @@ my $secret = 'My_little_secret';
 
 my $api = Flickr::API->new({
 						 'key'    => $key,
-						 'secret' => $secret,
+						 'api_secret' => $secret,
 						});
 
 isa_ok($api, 'Flickr::API');
@@ -29,12 +29,21 @@ is($api->api_type, 'flickr', 'Does Flickr::API object correctly specify its type
 
 my %config = $api->export_config();
 
-is($config{'key'}, $key,
-   'Did export_config return the api key');
-is($config{'secret'}, $secret,
+is($config{'api_key'}, $key,
+   'Did export_config return the api_key');
+
+is ($config{'key'}, undef,
+    'Did constructor remove the older key in favor of api_key');
+
+is($config{'api_secret'}, $secret,
    'Did export_config return the api secret');
+
+is ($config{'secret'}, undef,
+    'Did constructor remove the older secret in favor of api_secret');
+
 is($config{'frob'}, undef,
    'Did export_config return undef for undefined frob');
+
 is($config{'token'}, undef,
    'Did export_config return undef for undefined token');
 
@@ -59,8 +68,11 @@ isa_ok($api2, 'Flickr::API');
 
 is($api2->{api_key}, $key, 'were we able to import our api key');
 
+is($api2->{key}, undef, "did we sucessfully shake deprecated 'key' argument");
+
 is($api2->{api_secret}, $secret, 'were we able to import our api secret');
 
+is($api2->{secret}, undef, "did we sucessfully shake deprecated 'secret' argument");
 
 exit;
 
