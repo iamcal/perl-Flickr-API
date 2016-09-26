@@ -22,6 +22,8 @@ GetOptions (
 			'config_out=s',
 			'api_type=s',
 			'frob=s',
+			'api_key=s',
+			'api_secret=s',
 			'key=s',
 			'secret=s',
 			'token=s',
@@ -88,36 +90,42 @@ else {
 #--------------------------------------------------------------------
 # build config in layers. 1st undef, then config_in and finally args.
 # Prompt if missing key/secret
+# save key and secret as api_key and api_secret, moving api away from
+# un-specified key type
 #____________________________________________________________________
 
 if ( $cli_args->{'api_type'} eq 'flickr' ) {
 
-	$config->{'key'}      =  undef;
-	$config->{'secret'}   =  undef;
-	$config->{'frob'}     =  undef;
-	$config->{'callback'} =  undef;
-	$config->{'token'}    =  undef;
+	$config->{'api_key'}    =  undef;
+	$config->{'api_secret'} =  undef;
+	$config->{'frob'}       =  undef;
+	$config->{'callback'}   =  undef;
+	$config->{'token'}      =  undef;
 
-	if (defined($inconfig->{'key'}))      { $config->{'key'}      = $inconfig->{'key'}; }
-	if (defined($inconfig->{'secret'}))   { $config->{'secret'}   = $inconfig->{'secret'}; }
-	if (defined($inconfig->{'frob'}))     { $config->{'frob'}     = $inconfig->{'frob'}; }
-	if (defined($inconfig->{'callback'})) { $config->{'callback'} = $inconfig->{'callback'}; }
-	if (defined($inconfig->{'token'}))    { $config->{'token'}    = $inconfig->{'token'}; }
+	if (defined($inconfig->{'key'}))        { $config->{'api_key'}    = $inconfig->{'key'}; }
+	if (defined($inconfig->{'secret'}))     { $config->{'api_secret'} = $inconfig->{'secret'}; }
+	if (defined($inconfig->{'api_key'}))    { $config->{'api_key'}    = $inconfig->{'api_key'}; }
+	if (defined($inconfig->{'api_secret'})) { $config->{'api_secret'} = $inconfig->{'api_secret'}; }
+	if (defined($inconfig->{'frob'}))       { $config->{'frob'}       = $inconfig->{'frob'}; }
+	if (defined($inconfig->{'callback'}))   { $config->{'callback'}   = $inconfig->{'callback'}; }
+	if (defined($inconfig->{'token'}))      { $config->{'token'}      = $inconfig->{'token'}; }
 
-	if (defined($cli_args->{'key'}))      { $config->{'key'}      = $cli_args->{'key'}; }
-	if (defined($cli_args->{'secret'}))   { $config->{'secret'}   = $cli_args->{'secret'}; }
-	if (defined($cli_args->{'frob'}))     { $config->{'frob'}     = $cli_args->{'frob'}; }
-	if (defined($cli_args->{'callback'})) { $config->{'callback'} = $cli_args->{'callback'}; }
-	if (defined($cli_args->{'token'}))    { $config->{'token'}    = $cli_args->{'token'}; }
+	if (defined($cli_args->{'key'}))        { $config->{'api_key'}    = $cli_args->{'key'}; }
+	if (defined($cli_args->{'secret'}))     { $config->{'api_secret'} = $cli_args->{'secret'}; }
+	if (defined($cli_args->{'api_key'}))    { $config->{'api_key'}    = $cli_args->{'api_key'}; }
+	if (defined($cli_args->{'api_secret'})) { $config->{'api_secret'} = $cli_args->{'api_secret'}; }
+	if (defined($cli_args->{'frob'}))       { $config->{'frob'}       = $cli_args->{'frob'}; }
+	if (defined($cli_args->{'callback'}))   { $config->{'callback'}   = $cli_args->{'callback'}; }
+	if (defined($cli_args->{'token'}))      { $config->{'token'}      = $cli_args->{'token'}; }
 
-	unless (defined($config->{'key'})) {
+	unless (defined($config->{'api_key'})) {
 
-		$config->{'key'} = get_key($cli_args->{'api_type'});
+		$config->{'api_key'} = get_key($cli_args->{'api_type'});
 	}
 
-	unless (defined($config->{'secret'})) {
+	unless (defined($config->{'api_secret'})) {
 
-		$config->{'secret'} = get_secret($cli_args->{'api_type'});
+		$config->{'api_secret'} = get_secret($cli_args->{'api_type'});
 	}
 }
 
@@ -295,13 +303,15 @@ B< >
 
 I<For Flickr Auth>
 
-=item  B<--key> The api key when used with Flickr authentication 
-       I<required for testing>
+=item  B<--api_key> The api key when used with Flickr authentication 
+       I<required for testing> B<--key> still works to maintain compatibility
+       with L<Flickr::API> 1.10 and before, but it is saved as api_key.
 
 B< >
 
 =item  B<--secret> The api secret when used with Flickr authentication
-       I<required for testing>
+       I<required for testing> B<--secret> still works to maintain compatibility
+       with L<Flickr::API> 1.10 and before, but it is saved as api_secret.
 
 B< >
 
@@ -380,7 +390,7 @@ or
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2015, Louis B. Moore C<< <lbmoore@cpan.org> >>.
+Copyright (c) 2015-2016, Louis B. Moore C<< <lbmoore@cpan.org> >>.
 
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
