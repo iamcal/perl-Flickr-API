@@ -24,6 +24,9 @@ GetOptions (
 		   );
 
 
+if (defined($ARGV[0])) { $cli_args->{'config_in'} = $ARGV[0]; }
+
+
 #-------------------------------------------------------------
 # Respond to help-type arguments or if missing required params
 #_____________________________________________________________
@@ -60,7 +63,7 @@ storable configuration file.
 
 =head1 SYNOPSIS
 
-C<flickr_dump_stored_config.pl --config_in=Config-File_to_dump>
+C<flickr_dump_stored_config.pl [/path/to/file or --config_in=Config-File_to_dump]>
 
 =head1 OPTIONS
 
@@ -69,7 +72,9 @@ B< >
 
 =over 5
 
-=item  B<--config_in> points to the stored Flickr config file
+=item Either a B</path/to/config/file> or
+
+=item B<--config_in> pointing to the stored Flickr config file.
 
 B< >
 
@@ -97,7 +102,7 @@ and testing of the Flickr::API module.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2015, Louis B. Moore C<< <lbmoore@cpan.org> >>.
+Copyright (c) 2015-2016, Louis B. Moore C<< <lbmoore@cpan.org> >>.
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
 
