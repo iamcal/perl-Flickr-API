@@ -8,7 +8,16 @@ Changes to Flickr::API
  * Flickr::API add api_type method
  * Flickr::API add api_permissions method
  * Flickr::API stop using "return undef;"
+ * Flickr::API begin enforcing api_key/api_secret over key/secret
  * Flickr::API::Response Be more consistent using my ($self, $args,...) = @_; and not shift
+ * Added MAKETEST_OAUTH_AUTHED=1 and/or MAKETEST_FLICKR_AUTHED=1 for testing to allow testing
+   actual calls without re-authenticating
+ * Added more info on testing to README
+ * changes to tests for authentication to allow bypassing
+ * changes to tests to detect if deprecated key/secret become api_key/api_secret 
+ * changed script/flickr_dump_stored_config.pl to allow config file to be passed in ARGV
+ * changed script/flickr_make_stored_config.pl to shift configs from key/secret to
+   api_key/api_secret for Flickr Authentication.
 
 1.27, 2015-12-02 
  * Get Flickr::API::People into shape for the Tools.

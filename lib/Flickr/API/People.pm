@@ -208,7 +208,7 @@ Returns the username of the supplied mail or username
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015, Louis B. Moore
+Copyright (C) 2015-2016, Louis B. Moore
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
 

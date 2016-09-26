@@ -203,7 +203,7 @@ Returns the entire response status block as a hashref.
 
 Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
-Copyright (C) 2015, Louis B. Moore, E<lt>lbmoore@cpan.orgE<gt> 
+Copyright (C) 2015-2016, Louis B. Moore, E<lt>lbmoore@cpan.orgE<gt> 
 OAuth and accessor methods.
 
 =head1 SEE ALSO

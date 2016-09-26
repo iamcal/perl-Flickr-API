@@ -208,9 +208,7 @@ C<Flickr::API::execute_request()> method.
 
 =head1 AUTHOR
 
-Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
-
-OAuth patches and additions provided by Louis B. Moore
+Copyright (C) 2016, Louis B. Moore <lbmoore@cpan.org>
 
 =head1 SEE ALSO
 
