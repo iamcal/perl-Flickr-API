@@ -47,20 +47,26 @@ SKIP: {
         'Did people api initialize successful'
     );
 
-
-    my $values_file  = $ENV{MAKETEST_VALUES};
-
     my $valsflag=0;
-    if (-r $values_file) { $valsflag = 1; }
-    is(
-        $valsflag,
-        1,
-        "Is the values file: $values_file, readable?"
-    );
+    my $values_file;
+
+    if (defined($ENV{MAKETEST_VALUES})) {
+
+        $values_file  = $ENV{MAKETEST_VALUES};
+        if (-r $values_file) { $valsflag = 1; }
+       
+    }
+
 
   SKIP: {
-        skip "Skipping some people tests, values file isn't there or is not readable", 11   ##########
+        skip "Skipping some people tests, values file isn't there or is not readable", 12   ##########
             if $valsflag == 0;
+
+        is(
+            $valsflag,
+            1,
+            "Is the values file: $values_file, readable?"
+        );
 
         my %peoplevalues = (
             'search_email' => '',

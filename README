@@ -10,7 +10,7 @@ To install this module type the following:
 
    perl Makefile.PL
    make
-   make test [ MAKETEST_OAUTH_CFG=config_file, MAKETEST_FLICKR_CFG=other_config [MAKETEST_OAUTH_AUTHED=1, MAKETEST_FLICKR_AUTHED=1]]
+   make test [ MAKETEST_OAUTH_CFG=config_file, MAKETEST_FLICKR_CFG=other_config, MAKETEST_VALUES=values_file, [MAKETEST_OAUTH_AUTHED=1, MAKETEST_FLICKR_AUTHED=1]]
    make install
 
 
@@ -88,6 +88,7 @@ This module requires these other modules and libraries:
   Encode
   Getopt::Long
   HTTP::Request
+  HTTP::Request::Common
   HTTP::Response
   LWP::UserAgent
   Net::OAuth

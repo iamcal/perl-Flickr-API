@@ -32,8 +32,8 @@ SKIP: {
 	isa_ok($api, 'Flickr::API');
 	is($api->is_oauth, 0, 'Does Flickr::API object identify as Flickr');
 
-	like($api->{fauth}->{key},  qr/[0-9a-f]+/i, "Did we get an api key from $config_file");
-	like($api->{fauth}->{secret}, qr/[0-9a-f]+/i, "Did we get an api secret from $config_file");
+	like($api->{fauth}->{api_key},  qr/[0-9a-f]+/i, "Did we get an api key from $config_file");
+	like($api->{fauth}->{api_secret}, qr/[0-9a-f]+/i, "Did we get an api secret from $config_file");
 
 	if (defined($api->{fauth}->{token}) and $api->{fauth}->{token} =~ m/^[0-9]+-[0-9a-f]+$/i) {
 

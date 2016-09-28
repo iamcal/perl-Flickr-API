@@ -5,7 +5,7 @@ use Term::ReadLine;
 
 use Flickr::API;
 
-if (defined($ENV{MAKETEST_OAUTH_AUTHED}) {
+if (defined($ENV{MAKETEST_OAUTH_AUTHED})) {
 
     plan(skip_all => 'These tests are being bypassed because MAKETEST_OAUTH_AUTHED is defined, see README.');
 
