@@ -115,13 +115,15 @@ sub new {
         if (defined($args->{key}) or defined ($self->{key})) {
             delete $args->{key};
             delete $self->{key};
-            carp "Argument 'key' is deprecated and has been changed to api_key";
+            # Silenty switch key to api_key until a later release
+            # carp "Argument 'key' is deprecated and has been changed to api_key";
         }
 
         if (defined ($args->{secret}) or defined ($self->{secret})) {
             delete $args->{secret};
             delete $self->{secret};
-            carp "Argument 'secret' is deprecated and has been changed to api_secret";
+            # Silenty switch secret to api_secret until a later release
+            # carp "Argument 'secret' is deprecated and has been changed to api_secret";
         }
 
         $self->{fauth}->{frob}       = $args->{frob};

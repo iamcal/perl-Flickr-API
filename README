@@ -14,6 +14,18 @@ To install this module type the following:
    make install
 
 
+NOTES ON API CHANGES
+
+If you use key and secret when instantiating a new API object, be aware that
+the Flickr::API silently changes these to api_key and api_secret for use and
+configuration export. Since Flickr is (ambivalently) deprecating their own
+authentication in favor of OAuth, in time key and secret will become confusing,
+is key api_key or consumer_key?
+
+For now, key and secret are silently changed. In future releases there will be
+a warning when they are used.
+
+
 NOTES ON TESTING
 
 Testing authenticated method calls requires a previously authenticated

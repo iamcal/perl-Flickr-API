@@ -15,6 +15,7 @@ use Getopt::Long;
 my $config   = {};
 my $inconfig = {};
 my $cli_args = {};
+my $heads_up = 0;
 
 GetOptions (
 			$cli_args,
@@ -102,21 +103,23 @@ if ( $cli_args->{'api_type'} eq 'flickr' ) {
 	$config->{'callback'}   =  undef;
 	$config->{'token'}      =  undef;
 
-	if (defined($inconfig->{'key'}))        { $config->{'api_key'}    = $inconfig->{'key'}; }
-	if (defined($inconfig->{'secret'}))     { $config->{'api_secret'} = $inconfig->{'secret'}; }
+	if (defined($inconfig->{'key'}))        { $config->{'api_key'}    = $inconfig->{'key'}; $heads_up++; }
+	if (defined($inconfig->{'secret'}))     { $config->{'api_secret'} = $inconfig->{'secret'}; $heads_up++;  }
 	if (defined($inconfig->{'api_key'}))    { $config->{'api_key'}    = $inconfig->{'api_key'}; }
 	if (defined($inconfig->{'api_secret'})) { $config->{'api_secret'} = $inconfig->{'api_secret'}; }
 	if (defined($inconfig->{'frob'}))       { $config->{'frob'}       = $inconfig->{'frob'}; }
 	if (defined($inconfig->{'callback'}))   { $config->{'callback'}   = $inconfig->{'callback'}; }
 	if (defined($inconfig->{'token'}))      { $config->{'token'}      = $inconfig->{'token'}; }
 
-	if (defined($cli_args->{'key'}))        { $config->{'api_key'}    = $cli_args->{'key'}; }
-	if (defined($cli_args->{'secret'}))     { $config->{'api_secret'} = $cli_args->{'secret'}; }
+	if (defined($cli_args->{'key'}))        { $config->{'api_key'}    = $cli_args->{'key'};  $heads_up++;}
+	if (defined($cli_args->{'secret'}))     { $config->{'api_secret'} = $cli_args->{'secret'};  $heads_up++;}
 	if (defined($cli_args->{'api_key'}))    { $config->{'api_key'}    = $cli_args->{'api_key'}; }
 	if (defined($cli_args->{'api_secret'})) { $config->{'api_secret'} = $cli_args->{'api_secret'}; }
 	if (defined($cli_args->{'frob'}))       { $config->{'frob'}       = $cli_args->{'frob'}; }
 	if (defined($cli_args->{'callback'}))   { $config->{'callback'}   = $cli_args->{'callback'}; }
 	if (defined($cli_args->{'token'}))      { $config->{'token'}      = $cli_args->{'token'}; }
+
+    if ($heads_up > 0) { warn "\n\nNote: key and secret are changing to api_key and api_secret as part of the\nmove to OAuth to help make it more evident that the Flickr authentication is being used.\n\n"; }
 
 	unless (defined($config->{'api_key'})) {
 
@@ -297,7 +300,8 @@ B< >
 B< >
 
 =item  B<--api_type>  either I<flickr> for the original, but deprecated, Flickr
-                      authentication OR I<oauth> for the OAuth authentication
+                      authentication OR I<oauth> for the OAuth authentication.
+                      it defaults to I<oauth>
 
 B< >
 
