@@ -34,3 +34,5 @@ t/06-oauth-authenticated-methods.t
 t/07-reflection.t
 t/08-cameras.t
 t/09-people.t
+t/10-upload.t
+t/10-upload.jpg
