@@ -11,7 +11,7 @@ use Encode qw(encode_utf8);
 
 use parent qw(HTTP::Request);
 
-our $VERSION = '1.27_01';
+our $VERSION = '1.28';
 
 
 sub new {

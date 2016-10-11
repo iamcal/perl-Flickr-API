@@ -1,6 +1,6 @@
 Changes to Flickr::API
 
-1.27_01, 2016-09-21
+1.28, 2016-10-11
  * Add Flickr::API::Upload
  * Flickr::API Be more consistent using my ($self, $args,...) = @_; and not shift
  * Flickr::API Change from using $options to $args for consistancy
