@@ -75,7 +75,7 @@ SKIP: {
         }
 		my $prompt = "\n\n$uri\n\n" .
 		  "Copy the above url to a browser, and authenticate with Flickr\n" .
-`		  "Press [ENTER] once you get the redirect (or error): ";
+		  "Press [ENTER] once you get the redirect (or error): ";
 		my $input = $term->readline($prompt);
 
 		$prompt = "\n\nCopy the redirect URL from your browser and enter it\n" .
