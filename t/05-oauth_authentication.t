@@ -12,7 +12,7 @@ if (defined($ENV{MAKETEST_OAUTH_AUTHED})) {
 }
 
 if (defined($ENV{MAKETEST_OAUTH_CFG})) {
-    plan( tests => 22 );
+    plan( tests => 21 );
 }
 else {
     plan(skip_all => 'These tests require that MAKETEST_OAUTH_CFG points to a valid config, see README.');
@@ -21,6 +21,14 @@ else {
 
 my $config_file  = $ENV{MAKETEST_OAUTH_CFG};
 my $config_ref;
+
+my $useperms = 'read';
+
+if (defined($ENV{MAKETEST_PERMS}) && $ENV{MAKETEST_PERMS} =~ /^(read|write|delete)$/) {
+
+    $useperms = $ENV{MAKETEST_PERMS};
+
+}
 
 my $api;
 my $term;
@@ -35,7 +43,7 @@ is($fileflag, 1, "Is the config file: $config_file, readable?");
 
 SKIP: {
 
-    skip "Skipping authentication tests, oauth config isn't there or is not readable", 21
+    skip "Skipping authentication tests, oauth config isn't there or is not readable", 20
       if $fileflag == 0;
 
     $api = Flickr::API->import_storable_config($config_file);
@@ -45,7 +53,7 @@ SKIP: {
 
   SKIP: {
 
-        skip "Skip request token and authentication tests, access token exists", 19
+        skip "Skip request token and authentication tests, access token exists", 18
           if (defined($api->{oauth}->{token}) and $api->{oauth}->{token} =~ /^[0-9]+-[0-9a-f]+$/);
 
         like($api->{oauth}->{consumer_key},  qr/[0-9a-f]+/i, "Did we get a consumer key from $config_file");
@@ -66,14 +74,21 @@ SKIP: {
 
       SKIP: {
 
-            skip "Skipping authentication tests, oauth request token seems wrong", 15
+            skip "Skipping authentication tests, oauth request token seems wrong", 14
               if $proceed == 0;
 
-            my $perm = $api->oauth_authorize_uri({ 'perms' => 'embolden' });
 
-            is($perm, undef, "Did oauth_authorize_uri object to invalid permission");
+            my $which_rl = $term->ReadLine;
 
-            my $uri = $api->oauth_authorize_uri({ 'perms' => 'read' });
+            if ($which_rl eq "Term::ReadLine::Perl" or $which_rl eq "Term::ReadLine::Perl5") {
+
+                diag "\n\nTerm::ReadLine::Perl and Term::ReadLine::Perl5 may display prompts" .
+                     "\nincorrectly. If this is the case for you, try adding \"PERL_RL=Stub\"" .
+                     "\nto the environment variables passed in with make test\n\n";
+
+            }
+
+            my $uri = $api->oauth_authorize_uri({ 'perms' => $useperms });
             my $prompt = "\n\n$uri\n\n" .
               "Copy the above url to a browser, and authenticate with Flickr\n" .
               "Press [ENTER] once you get the redirect (or error): ";

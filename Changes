@@ -14,6 +14,7 @@ Changes to Flickr::API
    actual calls without re-authenticating
  * Added more info on testing to README
  * changes to tests for authentication to allow bypassing
+ * changes to tests for authentication to allow permissions other than read
  * changes to tests to detect if deprecated key/secret become api_key/api_secret 
  * changed script/flickr_dump_stored_config.pl to allow config file to be passed in ARGV
  * changed script/flickr_make_stored_config.pl to shift configs from key/secret to

@@ -22,6 +22,14 @@ else {
 
 my $config_file  = $ENV{MAKETEST_FLICKR_CFG};
 
+my $useperms = 'read';
+
+if (defined($ENV{MAKETEST_PERMS}) && $ENV{MAKETEST_PERMS} =~ /^(read|write|delete)$/) {
+
+    $useperms = $ENV{MAKETEST_PERMS};
+
+}
+
 my $api;
 my $term;
 my $key='fail';
@@ -52,7 +60,7 @@ SKIP: {
 		skip "Skip getting a frob, we already have " . $api->{fauth}->{frob} , 1
 		  if (defined($api->{fauth}->{frob}) and $api->{fauth}->{frob} =~ m/^[0-9a-f\-]+/i);
 
-		my $url = $api->request_auth_url('read');
+		my $url = $api->request_auth_url($useperms);
 
 		my $uri = $url->as_string();
 
