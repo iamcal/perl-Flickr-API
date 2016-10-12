@@ -64,9 +64,18 @@ SKIP: {
 
 		my $uri = $url->as_string();
 
+        my $which_rl = $term->ReadLine;
+
+        if ($which_rl eq "Term::ReadLine::Perl" or $which_rl eq "Term::ReadLine::Perl5") {
+
+            diag "\n\nTerm::ReadLine::Perl and Term::ReadLine::Perl5 may display prompts" .
+                 "\nincorrectly. If this is the case for you, try adding \"PERL_RL=Stub\"" .
+                 "\nto the environment variables passed in with make test\n\n";
+
+        }
 		my $prompt = "\n\n$uri\n\n" .
 		  "Copy the above url to a browser, and authenticate with Flickr\n" .
-		  "Press [ENTER] once you get the redirect (or error): ";
+`		  "Press [ENTER] once you get the redirect (or error): ";
 		my $input = $term->readline($prompt);
 
 		$prompt = "\n\nCopy the redirect URL from your browser and enter it\n" .

@@ -79,6 +79,15 @@ if (defined($cli_args->{'values_in'}) and -e $cli_args->{'values_in'}) {
 my $term = Term::ReadLine->new('Flickr Value Collector');
 $term->ornaments(0);
 
+my $which_rl = $term->ReadLine;
+
+if ($which_rl eq "Term::ReadLine::Perl" or $which_rl eq "Term::ReadLine::Perl5") {
+
+        warn "\n\nTerm::ReadLine::Perl and Term::ReadLine::Perl5 may display prompts" .
+             "\nincorrectly. If this is the case for you, try adding \"PERL_RL=Stub\"" .
+             "\nto the environment variables passed in with make test\n\n";
+
+}
 
 
 #--------------------------------------------------------------------

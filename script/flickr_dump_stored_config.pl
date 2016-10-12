@@ -7,7 +7,6 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use Term::ReadLine;
 use Storable  qw(store_fd retrieve_fd);
 use Getopt::Long;
 use Pod::Usage;
