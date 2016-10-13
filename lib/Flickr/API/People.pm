@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 
 use parent qw( Flickr::API );
-our $VERSION = '1.27';
+our $VERSION = '1.28';
 
 
 sub _initialize {
@@ -13,7 +13,7 @@ sub _initialize {
     my $self=shift;
     my $check;
 
-
+        #if $self->api_permissions . . .
         my $rsp = $self->execute_method('flickr.auth.oauth.checkToken');
 
         if (!$rsp->success()) {
@@ -208,7 +208,7 @@ Returns the username of the supplied mail or username
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015, Louis B. Moore
+Copyright (C) 2015-2016, Louis B. Moore
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
 

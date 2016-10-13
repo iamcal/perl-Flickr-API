@@ -19,6 +19,13 @@ warn <<EOT;
 #  use the MAKETEST_VALUES environment variable. You can use any of    #
 #  environment variables with the others.                              #
 #                                                                      #
+#  Tests that interact with Flickr will also need the                  #
+#  MAKETEST_OAUTH_CFG or the MAKETEST_FLICKR_CFG environment variables #
+#  or both. If you want to interact with Flickr, but don't want to     #
+#  go through the authentication process, again, then you can specify  #
+#  MAKETEST_OAUTH_AUTHED=1 and/or MAKETEST_FLICKR_AUTHED=1 as needed   #
+#  to bypass the authentication tests.                                 #
+#                                                                      #
 # If you want to run these tests, answer `No' to the question below    #
 # and run the script or build your own config by hand. When you are    #
 # ready for "make test" use:                                           #
@@ -48,6 +55,7 @@ WriteMakefile(
     'PREREQ_PM'        => {
         'LWP::UserAgent' => 0,
         'HTTP::Request' => 0,
+        'HTTP::Request::Common' => 0,
         'HTTP::Response' => 0,
         'HTTP::Message' => 1.56, # first version of libwww that supports decoded_content()
         'URI' => 1.18,

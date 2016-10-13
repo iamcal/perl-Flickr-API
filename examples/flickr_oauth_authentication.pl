@@ -10,6 +10,7 @@ use Data::Dumper;
 use Getopt::Long;
 use Term::ReadKey;
 use Term::ReadLine;
+use Pod::Usage;
 
 =pod
 
@@ -25,7 +26,13 @@ authenticated token.
 
  ./flickr_oauth_authentication.pl \
     --consumer_key="24680beef13579feed987654321ddcc6" \
-    --consumer_secret="de0cafe4feed0242"
+    --consumer_secret="de0cafe4feed0242" \
+  [ --perms={read,write,delete} \]
+  [ --config_out="/path/to/a/writable/config.st" ]
+  [ --help ]
+  [ --man ]
+
+If not specified, perms defaults to read.
 
 The script will produce a url for you to enter into a browser
 then prompt you to enter the callback url that is returned
@@ -45,6 +52,15 @@ Following the flow laid out in L<https://www.flickr.com/services/api/auth.oauth.
 
 my $term = Term::ReadLine->new('Flickr OAuth authentication');
 $term->ornaments(0);
+my $which_rl = $term->ReadLine;
+
+if ($which_rl eq "Term::ReadLine::Perl" or $which_rl eq "Term::ReadLine::Perl5") {
+
+        warn "\n\nTerm::ReadLine::Perl and Term::ReadLine::Perl5 may display prompts" .
+             "\nincorrectly. If this is the case for you, try adding \"PERL_RL=Stub\"" .
+             "\nto the environment variables passed in with make test\n\n";
+
+}
 
 $Data::Dumper::Sortkeys = 1;
 
@@ -54,8 +70,24 @@ GetOptions (
     $cli_args,
     'consumer_key=s',
     'consumer_secret=s',
+    'perms=s',
+    'config_out=s',
+    'help|?|usage',
+    'man'
 );
 
+pod2usage(1)  if ($cli_args->{help});
+pod2usage(-verbose => 2)  if ($cli_args->{man});
+
+#
+# get $cli_args prepared to pass into API
+#
+
+my $permstr = $cli_args->{'perms'};
+delete $cli_args->{'perms'};
+
+my $configfile =  $cli_args->{'config_out'};
+delete $cli_args->{'config_out'};
 
 =head2 Flickr Step 1, Application: get a request token
 
@@ -84,13 +116,18 @@ the optional I<perms> parameter. The Flickr::API returns a
 uri which (in this case) is cut in the terminal and pasted
 into a browser.
 
-  my $request2 = $api->oauth_authorize_uri({'perms' => 'read'});
+  my $request2 = $api->oauth_authorize_uri({'perms' => $cli_args->{'perms'}});
 
   print "\n\nYou now need to open: \n\n$request2\n\nin a browser.\n ";
 
 =cut
 
-my $request2 = $api->oauth_authorize_uri({'perms' => 'read'});
+my $permreq = 'read';
+if ( $permstr && $permstr =~ /^(read|write|delete)$/) {
+    $permreq = $permstr;
+}
+
+my $request2 = $api->oauth_authorize_uri({'perms' => $permreq});
 
 print "\n\nYou now need to open: \n\n$request2\n\nin a browser.\n ";
 
@@ -167,18 +204,20 @@ well. These are stashed in the Flickr::API object.
 =head2 Save the access information
 
 How you save the access information is outside the scope of this
-example. However, the B<oauth_export_config> method can be used
+example. However, the B<export_config> method can be used
 to retrieve the oauth parameters from the Flickr::API object.
 
-  my %oconfig = $api->oauth_export_config('protected resource');
+  my %oconfig = $api->export_config('protected resource');
 
   print Dumper(\%oconfig);
 
 =cut
 
-my %oconfig = $api->oauth_export_config('protected resource');
+my %oconfig = $api->export_config('protected resource');
 
 print Dumper(\%oconfig);
+
+if ($configfile) { $api->export_storable_config($configfile); }
 
 exit;
 
@@ -192,7 +231,7 @@ Louis B. Moore <lbmoore at cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2014, Louis B. Moore
+Copyright 2014,2016, Louis B. Moore
 
 This program is released under the Artistic License 2.0 by The Perl Foundation.
 

@@ -9,7 +9,7 @@ use Encode qw(encode_utf8);
 
 use parent qw(HTTP::Request);
 
-our $VERSION = '1.27';
+our $VERSION = '1.28';
 
 sub new {
     my $class = shift;
@@ -149,7 +149,9 @@ C<Flickr::API::execute_request()> method.
 
 Copyright (C) 2004, Cal Henderson, E<lt>cal@iamcal.comE<gt>
 
-OAuth patches and additions provided by Louis B. Moore
+OAuth patches and additions 
+Copyright (C) 2014-2016, Louis B. Moore <lbmoore@cpan.org>
+
 
 =head1 SEE ALSO
 

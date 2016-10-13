@@ -27,10 +27,10 @@ SKIP: {
 
 	$config_ref = retrieve($config_file);
 
-	like($config_ref->{key}, qr/[0-9a-f]+/i,
+	like($config_ref->{api_key}, qr/[0-9a-f]+/i,
 		 "Did we get a hexadecimal api key in the config");
 
-	like($config_ref->{secret}, qr/[0-9a-f]+/i,
+	like($config_ref->{api_secret}, qr/[0-9a-f]+/i,
 		 "Did we get a hexadecimal api secret in the config");
 
 	my $api;
@@ -38,8 +38,8 @@ SKIP: {
 	my $ref;
 
 	$api= Flickr::API->new({
-							'key'    => $config_ref->{key},
-							'secret' => $config_ref->{secret},
+							'api_key'    => $config_ref->{api_key},
+							'api_secret' => $config_ref->{api_secret},
 						   });
 
 	isa_ok($api, 'Flickr::API');
